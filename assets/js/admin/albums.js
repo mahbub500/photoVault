@@ -32,7 +32,7 @@ jQuery(document).ready(function($) {
                 action: 'pv_get_albums',
                 nonce: photoVault.nonce
             }, function(response) {
-                console.log('Albums response:', response); // Debug log
+                // console.log('Albums response:', response); // Debug log
                 
                 if (response.success && response.data) {
                     // Ensure data is an array

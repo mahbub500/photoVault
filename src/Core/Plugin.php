@@ -94,8 +94,8 @@ class Plugin {
         // Admin area initialization
         if (is_admin()) {
             new MenuManager();
-            new AssetManager();
         }
+            new AssetManager();
         
         // Frontend initialization
         new ShortcodeManager();

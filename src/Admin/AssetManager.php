@@ -10,8 +10,8 @@ namespace PhotoVault\Admin;
 class AssetManager {
     
     public function __construct() {
-        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
     }
     
     /**
