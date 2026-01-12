@@ -640,3 +640,330 @@
         gap: 10px;
     }
 }
+
+/* PhotoVault Upload Styles */
+
+/* Upload Modal */
+.pv-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.pv-modal-content {
+    background-color: #fff;
+    margin: 2% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pv-modal-close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.pv-modal-close:hover {
+    color: #333;
+}
+
+/* Upload Area */
+.pv-upload-area {
+    margin: 20px 0;
+    border: 3px dashed #ddd;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.pv-upload-area:hover {
+    border-color: #2271b1;
+    background-color: #f0f6fc;
+}
+
+.pv-upload-area.pv-drag-over {
+    border-color: #2271b1;
+    background-color: #e5f2ff;
+    transform: scale(1.02);
+}
+
+.pv-upload-placeholder .dashicons {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #2271b1;
+    margin-bottom: 15px;
+}
+
+.pv-upload-placeholder p {
+    font-size: 16px;
+    color: #666;
+    margin: 15px 0;
+}
+
+/* Upload Previews */
+#pv-upload-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+.pv-preview-item {
+    position: relative;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.pv-preview-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pv-preview-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+}
+
+.pv-preview-info {
+    padding: 8px;
+    font-size: 12px;
+}
+
+.pv-preview-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.pv-preview-size {
+    display: block;
+    color: #666;
+}
+
+.pv-preview-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.9);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.pv-preview-remove:hover {
+    background: rgba(220, 53, 69, 1);
+}
+
+.pv-preview-remove .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Progress Bar */
+#pv-upload-progress {
+    margin: 20px 0;
+}
+
+.pv-progress-bar {
+    width: 100%;
+    height: 30px;
+    background-color: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pv-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2271b1, #0073aa);
+    width: 0;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pv-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 30px 30px;
+    animation: progress-animation 1s linear infinite;
+}
+
+@keyframes progress-animation {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 30px 30px;
+    }
+}
+
+.pv-progress-text {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #2271b1;
+    font-size: 16px;
+}
+
+/* Upload Options */
+.pv-upload-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.pv-upload-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.pv-upload-field label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.pv-upload-field input,
+.pv-upload-field select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.pv-upload-field input:focus,
+.pv-upload-field select:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Upload Actions */
+.pv-upload-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.pv-upload-actions button {
+    padding: 10px 20px;
+}
+
+/* Form Fields */
+.pv-form-field {
+    margin-bottom: 20px;
+}
+
+.pv-form-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.pv-form-field input[type="text"],
+.pv-form-field textarea,
+.pv-form-field select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.pv-form-field input:focus,
+.pv-form-field textarea:focus,
+.pv-form-field select:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Modal Actions */
+.pv-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pv-modal-content {
+        width: 95%;
+        padding: 20px;
+        margin: 5% auto;
+    }
+    
+    #pv-upload-previews {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+    
+    .pv-preview-item img {
+        height: 100px;
+    }
+}
