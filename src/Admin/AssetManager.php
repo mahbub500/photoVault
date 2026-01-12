@@ -71,7 +71,7 @@ class AssetManager {
             true
         );
         
-        if (strpos($hook, 'photovault-albums') !== false) {
+        if (str_contains($hook, 'photovault-timeline') || str_contains($hook, 'photovault')) {
             wp_enqueue_script(
                 'photovault-admin-albums',
                 PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/albums.js',
