@@ -456,3 +456,4 @@ composer install
 ```
 
 Then activate in WordPress!# photoVault
+# photoVault

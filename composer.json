@@ -1,0 +1,19 @@
+{
+  "name": "photovault/photovault",
+  "description": "A Google Photos-like gallery system for WordPress with albums, tags, sharing, and timeline views",
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "PhotoVault\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Mahbub",
+      "email": "mahbubmr500@gmail.com"
+    }
+  ]
+}

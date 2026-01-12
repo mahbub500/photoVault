@@ -1,0 +1,642 @@
+/**
+ * PhotoVault - Admin CSS
+ * File: assets/css/admin/main.css
+ */
+
+/* Main Container */
+.photovault-wrap {
+    margin: 20px 20px 20px 0;
+}
+
+.photovault-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Sidebar */
+.pv-sidebar {
+    width: 280px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    height: fit-content;
+}
+
+.pv-filter-section h3,
+.pv-stats-section h3 {
+    margin: 0 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.pv-filter-group {
+    margin-bottom: 20px;
+}
+
+.pv-filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 13px;
+    color: #444;
+}
+
+.pv-filter-group input[type="text"],
+.pv-filter-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.pv-view-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.pv-view-btn {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.pv-view-btn:hover {
+    background: #f5f5f5;
+}
+
+.pv-view-btn.active {
+    background: #2271b1;
+    color: #fff;
+    border-color: #2271b1;
+}
+
+.pv-view-btn .dashicons {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+#pv-clear-filters {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Stats */
+.pv-stats-section {
+    margin-top: 30px;
+}
+
+.pv-stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.pv-stat-item:last-child {
+    border-bottom: none;
+}
+
+.pv-stat-label {
+    font-size: 13px;
+    color: #666;
+}
+
+.pv-stat-value {
+    font-weight: 600;
+    color: #2271b1;
+}
+
+/* Main Content */
+.pv-main-content {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.pv-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.pv-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pv-bulk-actions label {
+    margin: 0;
+    cursor: pointer;
+}
+
+.pv-sort select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Image Grid */
+.pv-grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pv-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pv-grid-item {
+    position: relative;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.pv-grid-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.pv-grid-item-inner {
+    position: relative;
+    cursor: pointer;
+}
+
+.pv-grid-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.pv-item-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.pv-item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.pv-grid-item:hover .pv-item-overlay {
+    opacity: 1;
+}
+
+.pv-item-action {
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.pv-item-action:hover {
+    transform: scale(1.1);
+}
+
+.pv-item-action .dashicons {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+}
+
+.pv-item-info {
+    padding: 12px;
+    background: #f9f9f9;
+}
+
+.pv-item-title {
+    display: block;
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pv-item-date {
+    font-size: 12px;
+    color: #666;
+}
+
+/* List View Specific */
+.pv-list-view .pv-grid-item {
+    display: flex;
+    align-items: center;
+}
+
+.pv-list-view .pv-grid-item img {
+    width: 100px;
+    height: 100px;
+}
+
+.pv-list-view .pv-item-info {
+    flex: 1;
+}
+
+/* Loading */
+.pv-loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.pv-load-more {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Modals */
+.pv-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.pv-modal-content {
+    background: #fff;
+    margin: 50px auto;
+    padding: 30px;
+    max-width: 600px;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.pv-modal-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.pv-modal-close:hover {
+    color: #000;
+}
+
+.pv-modal h2 {
+    margin: 0 0 20px;
+    font-size: 22px;
+}
+
+/* Upload Area */
+.pv-upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s;
+    margin-bottom: 20px;
+}
+
+.pv-upload-area.pv-drag-over {
+    border-color: #2271b1;
+    background: #f0f6fc;
+}
+
+.pv-upload-placeholder .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #ccc;
+}
+
+.pv-upload-placeholder p {
+    margin: 10px 0;
+    color: #666;
+}
+
+/* Upload Progress */
+#pv-upload-progress {
+    margin: 20px 0;
+}
+
+.pv-progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #f0f0f0;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.pv-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2271b1, #0073aa);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.pv-progress-text {
+    text-align: center;
+    font-weight: 600;
+    color: #666;
+}
+
+#pv-upload-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pv-upload-preview {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pv-upload-preview img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.pv-preview-info {
+    padding: 8px;
+    background: #f9f9f9;
+    font-size: 11px;
+}
+
+.pv-preview-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.pv-preview-size {
+    color: #666;
+}
+
+.pv-remove-preview {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    color: #c00;
+}
+
+.pv-remove-preview:hover {
+    background: #fff;
+}
+
+.pv-upload-options,
+.pv-form-field {
+    margin-bottom: 15px;
+}
+
+.pv-upload-field label,
+.pv-form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.pv-upload-field input,
+.pv-upload-field select,
+.pv-form-field input,
+.pv-form-field select,
+.pv-form-field textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pv-upload-actions,
+.pv-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Detail Modal */
+.pv-detail-modal {
+    max-width: 1000px;
+}
+
+.pv-detail-container {
+    display: flex;
+    gap: 30px;
+}
+
+.pv-detail-image {
+    flex: 2;
+    position: relative;
+}
+
+.pv-detail-image img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.pv-detail-nav {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.pv-nav-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.pv-nav-btn:hover {
+    background: #fff;
+    transform: scale(1.1);
+}
+
+.pv-nav-btn .dashicons {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+}
+
+.pv-detail-sidebar {
+    flex: 1;
+}
+
+.pv-detail-sidebar h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+}
+
+.pv-detail-meta,
+.pv-detail-tags,
+.pv-detail-share {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.pv-detail-meta p {
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.pv-detail-tags input,
+.pv-detail-share select {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 8px 0;
+}
+
+.pv-tag {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin: 4px 4px 4px 0;
+}
+
+.pv-detail-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pv-detail-actions .button {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Tags List */
+#pv-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .pv-grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .photovault-container {
+        flex-direction: column;
+    }
+    
+    .pv-sidebar {
+        width: 100%;
+    }
+    
+    .pv-detail-container {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .pv-grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .pv-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

@@ -1,0 +1,400 @@
+/**
+ * PhotoVault - Frontend CSS
+ * File: assets/css/frontend.css
+ */
+
+/* Gallery Styles */
+.photovault-gallery {
+    margin: 30px 0;
+}
+
+.pv-gallery-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.photovault-gallery[data-columns="2"] .pv-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.photovault-gallery[data-columns="3"] .pv-gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.photovault-gallery[data-columns="4"] .pv-gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.pv-gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.pv-gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.pv-gallery-item a {
+    display: block;
+    position: relative;
+}
+
+.pv-gallery-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
+
+.pv-gallery-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: #fff;
+    padding: 20px 15px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.pv-gallery-item:hover .pv-gallery-title {
+    opacity: 1;
+}
+
+/* Album Styles */
+.photovault-album {
+    margin: 30px 0;
+}
+
+.pv-album-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
+
+.pv-album-header h2 {
+    font-size: 32px;
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.pv-album-header p {
+    font-size: 16px;
+    color: #666;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Upload Form Styles */
+.photovault-upload-form {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.pv-form-group {
+    margin-bottom: 20px;
+}
+
+.pv-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.pv-form-group input[type="file"],
+.pv-form-group input[type="text"],
+.pv-form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.pv-form-group input:focus,
+.pv-form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.pv-form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+    font-size: 12px;
+}
+
+.pv-upload-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.pv-preview-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pv-preview-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.pv-btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pv-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    width: 100%;
+}
+
+.pv-btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a4091 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.pv-btn-primary:active {
+    transform: translateY(0);
+}
+
+.pv-upload-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.pv-upload-result {
+    margin-top: 20px;
+}
+
+.pv-success {
+    padding: 15px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    color: #155724;
+    font-weight: 500;
+}
+
+.pv-error {
+    padding: 15px;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    color: #721c24;
+    font-weight: 500;
+}
+
+/* Timeline Frontend Styles */
+.photovault-timeline-frontend {
+    margin: 30px 0;
+}
+
+.pv-timeline-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.pv-timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+}
+
+.pv-timeline-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateX(5px);
+}
+
+.pv-timeline-item h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.pv-timeline-item .pv-count {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Loading Spinner */
+.pv-loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .photovault-gallery[data-columns="4"] .pv-gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .photovault-gallery[data-columns="3"] .pv-gallery-grid,
+    .photovault-gallery[data-columns="4"] .pv-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pv-gallery-item img {
+        height: 200px;
+    }
+    
+    .pv-album-header h2 {
+        font-size: 24px;
+    }
+    
+    .photovault-upload-form {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .photovault-gallery[data-columns="2"] .pv-gallery-grid,
+    .photovault-gallery[data-columns="3"] .pv-gallery-grid,
+    .photovault-gallery[data-columns="4"] .pv-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pv-gallery-item img {
+        height: 250px;
+    }
+    
+    .pv-timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* Lightbox Effect (optional - requires additional JS library) */
+.pv-gallery-item a[data-lightbox] {
+    cursor: zoom-in;
+}
+
+/* Masonry Layout Option */
+.pv-gallery-grid.pv-masonry {
+    display: block;
+    column-count: 3;
+    column-gap: 20px;
+}
+
+.pv-gallery-grid.pv-masonry .pv-gallery-item {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .pv-gallery-grid.pv-masonry {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .pv-gallery-grid.pv-masonry {
+        column-count: 1;
+    }
+}
+
+/* Animations */
+.pv-gallery-item {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom Scrollbar */
+.photovault-gallery::-webkit-scrollbar,
+.pv-timeline-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.photovault-gallery::-webkit-scrollbar-track,
+.pv-timeline-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.photovault-gallery::-webkit-scrollbar-thumb,
+.pv-timeline-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.photovault-gallery::-webkit-scrollbar-thumb:hover,
+.pv-timeline-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a4091 100%);
+}

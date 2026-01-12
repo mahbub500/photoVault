@@ -1,0 +1,49 @@
+# Composer
+/vendor/
+composer.lock
+
+# WordPress
+.htaccess
+wp-config.php
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+wp-content/temp/
+
+# Plugin specific
+/assets/uploads/
+/temp/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Node (if using npm for assets)
+node_modules/
+package-lock.json
+/assets/dist/
+
+# Testing
+/tests/coverage/
+phpunit.xml
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build
+/build/
+/dist/
+*.zip
