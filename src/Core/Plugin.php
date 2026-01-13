@@ -137,6 +137,10 @@ class Plugin {
         add_action('wp_ajax_update_tag', [$this->tag_controller, 'update_tag']);
         add_action('wp_ajax_delete_tag', [$this->tag_controller, 'delete_tag']);
         add_action('wp_ajax_get_image_tags', [$this->tag_controller, 'get_image_tags']);
+
+        add_action('wp_ajax_pv_get_user_images', [$this->tag_controller, 'get_user_images_for_assignment']);
+        // Assign multiple images to a tag
+        add_action('wp_ajax_pv_assign_images_to_tag', [$this->tag_controller, 'assign_images_to_tag']);
         
         // Share operations
         add_action('wp_ajax_pv_share_item', [$this->share_controller, 'share']);
