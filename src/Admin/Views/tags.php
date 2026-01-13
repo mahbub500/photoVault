@@ -383,6 +383,40 @@ $all_tags = $tag_model->get_tags();
     object-fit: cover;
 }
 
+.pv-remove-tag-from-image {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    z-index: 5;
+}
+
+.pv-remove-tag-from-image:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.pv-remove-tag-from-image .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.pv-image-item:hover .pv-remove-tag-from-image {
+    display: flex;
+}
+
 .pv-image-info {
     padding: 10px;
 }
@@ -603,9 +637,15 @@ jQuery(document).ready(function($) {
                     
                     images.forEach(function(image) {
                         const html = `
-                            <div class="pv-image-item" data-full-url="${image.full_url || image.thumbnail_url}">
+                            <div class="pv-image-item" data-image-id="${image.id}" data-full-url="${image.full_url || image.thumbnail_url}">
                                 <div class="pv-image-wrapper">
                                     <img src="${image.thumbnail_url}" alt="${image.title}" loading="lazy">
+                                    <button class="pv-remove-tag-from-image" 
+                                            data-image-id="${image.id}" 
+                                            data-tag-id="${tagId}"
+                                            title="<?php _e('Remove image from tag.', 'photovault'); ?>">
+                                        <span class="dashicons dashicons-no"></span>
+                                    </button>
                                 </div>
                                 <div class="pv-image-info">
                                     <div class="pv-image-title">${image.title}</div>
@@ -634,7 +674,12 @@ jQuery(document).ready(function($) {
     });
     
     // View image in lightbox
-    $(document).on('click', '.pv-image-item', function() {
+    $(document).on('click', '.pv-image-item', function(e) {
+        // Don't open lightbox if clicking remove button
+        if ($(e.target).closest('.pv-remove-tag-from-image').length) {
+            return;
+        }
+        
         const fullUrl = $(this).data('full-url');
         const title = $(this).find('.pv-image-title').text();
         const date = $(this).find('.pv-image-date').text();
@@ -643,6 +688,67 @@ jQuery(document).ready(function($) {
         $('#pv-lightbox-title').text(title);
         $('#pv-lightbox-date').text(date);
         $('#pv-lightbox-modal').fadeIn(300);
+    });
+    
+    // Remove tag from image (in tag images modal)
+    $(document).on('click', '.pv-remove-tag-from-image', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!confirm('<?php _e('Remove this tag from the image?', 'photovault'); ?>')) {
+            return;
+        }
+        
+        const $btn = $(this);
+        const $item = $btn.closest('.pv-image-item');
+        const imageId = $btn.data('image-id');
+        const tagId = $btn.data('tag-id');
+        
+        $btn.prop('disabled', true);
+        
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'remove_tag',
+                nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>',
+                image_id: imageId,
+                tag_id: tagId
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Remove image from grid with animation
+                    $item.fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // Check if grid is empty
+                        if ($('#pv-images-grid .pv-image-item').length === 0) {
+                            $('#pv-images-grid').hide();
+                            $('#pv-images-empty').show();
+                        }
+                    });
+                    
+                    // Update tag count in main view
+                    const $tagCard = $('.pv-tag-card[data-tag-id="' + tagId + '"]');
+                    const $countSpan = $tagCard.find('.pv-tag-count');
+                    const currentCount = parseInt($countSpan.text());
+                    const newCount = currentCount - 1;
+                    
+                    if (newCount > 0) {
+                        $countSpan.text(newCount + ' <?php _e('images', 'photovault'); ?>');
+                    } else {
+                        $countSpan.text('0 <?php _e('images', 'photovault'); ?>');
+                    }
+                } else {
+                    alert(response.data.message || '<?php _e('Failed to remove tag', 'photovault'); ?>');
+                    $btn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                alert('<?php _e('Error removing tag', 'photovault'); ?>');
+                $btn.prop('disabled', false);
+            }
+        });
     });
 });
 </script>
