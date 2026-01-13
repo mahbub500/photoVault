@@ -320,4 +320,85 @@ class TagController {
         
         wp_send_json_success($tags);
     }
+
+    /**
+     * Get all user images (simple version)
+     */
+    public function get_all_user_images() {
+        check_ajax_referer('photovault_nonce', 'nonce');
+        
+        global $wpdb;
+        $user_id = get_current_user_id();
+        
+        $images = $wpdb->get_results($wpdb->prepare(
+            "SELECT i.id, i.attachment_id, i.title, i.upload_date
+            FROM {$wpdb->prefix}pv_images i
+            WHERE i.user_id = %d
+            ORDER BY i.upload_date DESC",
+            $user_id
+        ));
+        
+        $formatted_images = [];
+        
+        foreach ($images as $image) {
+            $thumbnail_url = wp_get_attachment_image_url($image->attachment_id, 'thumbnail');
+            if (!$thumbnail_url) {
+                $thumbnail_url = wp_get_attachment_url($image->attachment_id);
+            }
+            
+            $formatted_images[] = [
+                'id' => $image->id,
+                'title' => $image->title,
+                'thumbnail_url' => $thumbnail_url
+            ];
+        }
+        
+        wp_send_json_success($formatted_images);
+    }
+
+    /**
+     * Bulk assign images to tag
+     */
+    public function bulk_assign_tag() {
+        check_ajax_referer('photovault_nonce', 'nonce');
+        
+        if (!current_user_can('photovault_edit_images')) {
+            wp_send_json_error(['message' => __('No permission', 'photovault')]);
+        }
+        
+        $tag_id = intval($_POST['tag_id'] ?? 0);
+        $image_ids = $_POST['image_ids'] ?? [];
+        
+        if (!$tag_id || empty($image_ids)) {
+            wp_send_json_error(['message' => __('Missing data', 'photovault')]);
+        }
+        
+        global $wpdb;
+        $user_id = get_current_user_id();
+        $success_count = 0;
+        
+        foreach ($image_ids as $image_id) {
+            $image_id = intval($image_id);
+            
+            // Verify ownership
+            $owns = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}pv_images 
+                 WHERE id = %d AND user_id = %d",
+                $image_id, $user_id
+            ));
+            
+            if ($owns) {
+                $result = $this->tag_model->add_to_image($image_id, $tag_id);
+                if ($result) $success_count++;
+            }
+        }
+        
+        // Get updated count
+        $updated_tag = $this->tag_model->get($tag_id);
+        
+        wp_send_json_success([
+            'message' => sprintf('%d images assigned', $success_count),
+            'new_count' => $updated_tag->usage_count
+        ]);
+    }
 }

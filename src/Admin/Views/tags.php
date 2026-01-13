@@ -614,25 +614,6 @@ $all_tags = $tag_model->get_tags();
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.pv-assign-image-item.already-tagged {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pv-assign-image-item.already-tagged::after {
-    content: '✓ Tagged';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(16, 185, 129, 0.95);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 12px;
-}
-
 .pv-assign-image-wrapper {
     position: relative;
     padding-bottom: 100%;
@@ -699,7 +680,7 @@ $all_tags = $tag_model->get_tags();
     padding-top: 20px;
     border-top: 1px solid #e5e7eb;
     position: sticky;
-    bottom: 0;
+    bottom: 22px;
     background: white;
 }
 
@@ -1021,15 +1002,14 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'pv_get_user_images',
-                nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>',
-                tag_id: tagId
+                action: 'pv_get_all_images',
+                nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>'
             },
             success: function(response) {
                 $('#pv-assign-loading').hide();
                 
                 if (response.success && response.data && response.data.length > 0) {
-                    displayAssignImages(response.data, tagId);
+                    displayAssignImages(response.data);
                     $('#pv-assign-images-grid').show();
                 } else {
                     $('#pv-assign-empty').show();
@@ -1043,21 +1023,18 @@ jQuery(document).ready(function($) {
     });
     
     // Display images in assign modal
-    function displayAssignImages(images, tagId) {
+    function displayAssignImages(images) {
         const $grid = $('#pv-assign-images-grid');
         $grid.empty();
         
         images.forEach(function(image) {
-            const alreadyTagged = image.has_tag ? 'already-tagged' : '';
             const html = `
-                <div class="pv-assign-image-item ${alreadyTagged}" data-image-id="${image.id}">
+                <div class="pv-assign-image-item" data-image-id="${image.id}">
                     <div class="pv-assign-image-wrapper">
                         <img src="${image.thumbnail_url}" alt="${image.title}" loading="lazy">
-                        ${!image.has_tag ? `
-                            <div class="pv-assign-checkbox">
-                                <span class="dashicons dashicons-yes"></span>
-                            </div>
-                        ` : ''}
+                        <div class="pv-assign-checkbox">
+                            <span class="dashicons dashicons-yes"></span>
+                        </div>
                     </div>
                     <div class="pv-assign-image-title">${image.title}</div>
                 </div>
@@ -1067,7 +1044,7 @@ jQuery(document).ready(function($) {
     }
     
     // Toggle image selection
-    $(document).on('click', '.pv-assign-image-item:not(.already-tagged)', function() {
+    $(document).on('click', '.pv-assign-image-item', function() {
         const imageId = $(this).data('image-id');
         
         $(this).toggleClass('selected');
@@ -1085,9 +1062,9 @@ jQuery(document).ready(function($) {
     
     // Select all
     $('#pv-assign-select-all').on('click', function() {
-        $('.pv-assign-image-item:not(.already-tagged)').addClass('selected');
+        $('.pv-assign-image-item').addClass('selected');
         selectedImages = [];
-        $('.pv-assign-image-item.selected').each(function() {
+        $('.pv-assign-image-item').each(function() {
             selectedImages.push($(this).data('image-id'));
         });
         $('#pv-selected-count').text(selectedImages.length);
@@ -1128,7 +1105,7 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'pv_assign_images_to_tag',
+                action: 'pv_bulk_assign_tag',
                 nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>',
                 tag_id: currentAssignTagId,
                 image_ids: selectedImages
