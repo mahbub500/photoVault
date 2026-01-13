@@ -143,7 +143,17 @@ class Plugin {
         add_action('wp_ajax_pv_unshare_item', [$this->share_controller, 'unshare']);
         
         // Timeline operations
-        add_action('wp_ajax_pv_get_timeline', [$this->timeline_controller, 'get_timeline']);
+        
+        // Get timeline images grouped by date
+        add_action('wp_ajax_pv_get_timeline_images', 
+            [$this->timeline_controller, 'get_timeline_images']);
+        // Get timeline statistics
+        add_action('wp_ajax_pv_get_timeline_stats', 
+            [$this->timeline_controller, 'get_timeline_stats']);
+
+        // Get images by date range
+        add_action('wp_ajax_pv_get_images_by_date_range', 
+            [$this->timeline_controller, 'get_images_by_date_range']);
     }
     
     /**
