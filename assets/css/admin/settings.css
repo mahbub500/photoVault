@@ -1,0 +1,335 @@
+/**
+ * PhotoVault Settings Page Styles
+ *
+ * @package PhotoVault
+ */
+
+/* ==========================================================================
+   Settings Wrapper
+   ========================================================================== */
+
+.photovault-settings-wrap {
+    max-width: 1200px;
+}
+
+.photovault-settings-wrap h1 {
+    margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   Settings Section
+   ========================================================================== */
+
+.photovault-settings-section {
+    background: #fff;
+    padding: 20px 30px;
+    margin: 20px 0;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.photovault-settings-section h2 {
+    margin: 0 0 20px 0;
+    padding: 0 0 15px 0;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* ==========================================================================
+   Form Table
+   ========================================================================== */
+
+.photovault-form-table {
+    margin-top: 20px;
+}
+
+.photovault-form-table th {
+    padding: 20px 15px 20px 0;
+    width: 220px;
+    vertical-align: top;
+    font-weight: 600;
+}
+
+.photovault-form-table td {
+    padding: 15px 10px;
+    vertical-align: top;
+}
+
+.photovault-form-table tbody tr {
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.photovault-form-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* ==========================================================================
+   Form Fields
+   ========================================================================== */
+
+.photovault-form-table input[type="text"],
+.photovault-form-table input[type="number"],
+.photovault-form-table select {
+    max-width: 400px;
+}
+
+.photovault-form-table .small-text {
+    width: 80px;
+}
+
+.photovault-form-table .description {
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 0;
+    color: #646970;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Checkbox Groups */
+.photovault-checkbox-group label {
+    display: inline-block;
+    margin-right: 25px;
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
+.photovault-checkbox-group input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Fieldset Styling */
+fieldset label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+fieldset label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* ==========================================================================
+   Range Inputs
+   ========================================================================== */
+
+.photovault-range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 8px;
+}
+
+.photovault-range-input {
+    flex: 1;
+    max-width: 300px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    outline: none;
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.photovault-range-input:hover {
+    background: #ccc;
+}
+
+.photovault-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #2271b1;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.photovault-range-input::-webkit-slider-thumb:hover {
+    background: #135e96;
+}
+
+.photovault-range-input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #2271b1;
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    transition: background 0.2s;
+}
+
+.photovault-range-input::-moz-range-thumb:hover {
+    background: #135e96;
+}
+
+.photovault-range-output {
+    min-width: 50px;
+    padding: 4px 10px;
+    background: #f0f0f1;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+    color: #1d2327;
+}
+
+/* ==========================================================================
+   Input Groups
+   ========================================================================== */
+
+.photovault-input-group {
+    margin-bottom: 10px;
+}
+
+.photovault-input-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: normal;
+}
+
+.photovault-unit {
+    color: #646970;
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   Submit Button
+   ========================================================================== */
+
+.photovault-settings-section .submit {
+    margin-top: 20px;
+    margin-bottom: 0;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media screen and (max-width: 782px) {
+    .photovault-settings-section {
+        padding: 15px 20px;
+    }
+    
+    .photovault-form-table th,
+    .photovault-form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .photovault-form-table th {
+        padding-bottom: 5px;
+    }
+    
+    .photovault-form-table td {
+        padding-top: 5px;
+    }
+    
+    .photovault-range-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .photovault-range-input {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .photovault-checkbox-group label {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+/* ==========================================================================
+   Color Picker
+   ========================================================================== */
+
+.wp-picker-container {
+    margin-top: 5px;
+}
+
+.wp-picker-container .wp-color-result {
+    border-radius: 3px;
+}
+
+/* ==========================================================================
+   Success Notice
+   ========================================================================== */
+
+.photovault-settings-wrap .notice {
+    margin: 15px 0;
+}
+
+/* ==========================================================================
+   Tab Navigation
+   ========================================================================== */
+
+.nav-tab-wrapper {
+    margin-bottom: 0;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.nav-tab {
+    position: relative;
+    padding: 10px 15px;
+    font-size: 14px;
+}
+
+.nav-tab-active {
+    border-bottom-color: #f0f0f1;
+}
+
+/* ==========================================================================
+   Help Text & Icons
+   ========================================================================== */
+
+.photovault-help-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+    vertical-align: middle;
+    color: #646970;
+    cursor: help;
+}
+
+.photovault-help-icon:hover {
+    color: #2271b1;
+}
+
+/* ==========================================================================
+   Loading States
+   ========================================================================== */
+
+.photovault-settings-form.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Error States
+   ========================================================================== */
+
+.photovault-form-table input.error,
+.photovault-form-table select.error {
+    border-color: #d63638;
+}
+
+.photovault-error-message {
+    display: block;
+    margin-top: 5px;
+    color: #d63638;
+    font-size: 13px;
+    font-weight: 600;
+}

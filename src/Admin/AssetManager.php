@@ -44,7 +44,7 @@ class AssetManager {
                 PHOTOVAULT_VERSION
             );
         }
-        
+    
         if (strpos($hook, 'photovault-timeline') !== false) {
             wp_enqueue_style(
                 'photovault-admin-timeline',
@@ -80,6 +80,8 @@ class AssetManager {
                 true
             );
         }
+
+        
         
         if (strpos($hook, 'photovault-timeline') !== false) {
             wp_enqueue_script(

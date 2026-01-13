@@ -80,14 +80,14 @@ class MenuManager {
         );
         
         // Settings submenu
-        add_submenu_page(
-            'photovault',
-            __('Settings', 'photovault'),
-            __('Settings', 'photovault'),
-            'manage_options',                          // Only admins
-            'photovault-settings',
-            [$this, 'render_settings_page']
-        );
+        // add_submenu_page(
+        //     'photovault',
+        //     __('Settings', 'photovault'),
+        //     __('Settings', 'photovault'),
+        //     'manage_options',                          // Only admins
+        //     'photovault-settings',
+        //     [$this, 'render_settings_page']
+        // );
     }
     
     /**
