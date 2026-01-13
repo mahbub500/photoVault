@@ -207,23 +207,34 @@ class TagController {
         // Get images (initial load - first 20)
         global $wpdb;
         
+        // Remove visibility check in admin - show all images with this tag
         $images = $wpdb->get_results($wpdb->prepare(
             "SELECT i.*, u.display_name as author_name
              FROM {$wpdb->prefix}pv_images i
              INNER JOIN {$wpdb->prefix}pv_image_tag it ON i.id = it.image_id
              LEFT JOIN {$wpdb->users} u ON i.user_id = u.ID
              WHERE it.tag_id = %d
-             AND (i.visibility = 'public' OR i.user_id = %d)
              ORDER BY i.upload_date DESC
              LIMIT 20",
-            $tag_id,
-            get_current_user_id()
+            $tag_id
         ));
         
-        // Format images
+        // Format images with proper URLs
         foreach ($images as &$image) {
-            $image->thumbnail_url = wp_get_attachment_image_url($image->attachment_id, 'medium');
-            $image->full_url = wp_get_attachment_image_url($image->attachment_id, 'full');
+            // Try to get attachment URLs
+            $thumbnail_url = wp_get_attachment_image_url($image->attachment_id, 'medium');
+            $full_url = wp_get_attachment_image_url($image->attachment_id, 'full');
+            
+            // Fallback to attachment URL if specific size not available
+            if (!$thumbnail_url) {
+                $thumbnail_url = wp_get_attachment_url($image->attachment_id);
+            }
+            if (!$full_url) {
+                $full_url = wp_get_attachment_url($image->attachment_id);
+            }
+            
+            $image->thumbnail_url = $thumbnail_url ?: '';
+            $image->full_url = $full_url ?: '';
             $image->formatted_date = date_i18n(get_option('date_format'), strtotime($image->upload_date));
         }
         

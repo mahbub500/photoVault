@@ -1,6 +1,6 @@
 <?php
 /**
- * Tags Admin View - Example showing how to add View Images links
+ * Tags Admin View with Modal Image Display
  * File: src/Admin/Views/tags.php
  *
  * @package PhotoVault
@@ -40,11 +40,13 @@ $all_tags = $tag_model->get_tags();
                         <span class="pv-tag-count"><?php echo esc_html($tag->usage_count); ?> <?php _e('images', 'photovault'); ?></span>
                     </div>
                     <div class="pv-tag-actions">
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=photovault-tags&tag_id=' . $tag->id)); ?>" 
-                           class="button button-primary button-small">
+                        <button class="button button-primary button-small pv-view-tag-images" 
+                                data-tag-id="<?php echo esc_attr($tag->id); ?>"
+                                data-tag-name="<?php echo esc_attr($tag->name); ?>"
+                                data-tag-color="<?php echo esc_attr($tag->color); ?>">
                             <span class="dashicons dashicons-images-alt2"></span>
                             <?php _e('View Images', 'photovault'); ?>
-                        </a>
+                        </button>
                         <button class="button button-small pv-edit-tag" 
                                 data-tag-id="<?php echo esc_attr($tag->id); ?>"
                                 data-tag-name="<?php echo esc_attr($tag->name); ?>"
@@ -95,6 +97,46 @@ $all_tags = $tag_model->get_tags();
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Images Modal -->
+<div id="pv-images-modal" class="pv-modal" style="display: none;">
+    <div class="pv-modal-overlay"></div>
+    <div class="pv-modal-content pv-images-modal-content">
+        <div class="pv-modal-header">
+            <h2 id="pv-images-modal-title">
+                <span class="pv-tag-badge-inline" id="pv-modal-tag-badge"></span>
+                <span id="pv-modal-tag-name"></span>
+            </h2>
+            <button class="pv-modal-close">&times;</button>
+        </div>
+        <div class="pv-modal-body">
+            <div id="pv-images-loading" style="text-align: center; padding: 40px;">
+                <span class="spinner is-active" style="float: none; margin: 0;"></span>
+                <p><?php _e('Loading images...', 'photovault'); ?></p>
+            </div>
+            <div id="pv-images-grid" class="pv-modal-images-grid" style="display: none;"></div>
+            <div id="pv-images-empty" style="display: none; text-align: center; padding: 40px; color: #666;">
+                <span class="dashicons dashicons-images-alt2" style="font-size: 48px; width: 48px; height: 48px; opacity: 0.5;"></span>
+                <p><?php _e('No images found with this tag.', 'photovault'); ?></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Lightbox Modal -->
+<div id="pv-lightbox-modal" class="pv-modal" style="display: none;">
+    <div class="pv-modal-overlay"></div>
+    <div class="pv-modal-content pv-lightbox-content">
+        <button class="pv-modal-close">&times;</button>
+        <div class="pv-lightbox-image-container">
+            <img id="pv-lightbox-image" src="" alt="">
+        </div>
+        <div class="pv-lightbox-info">
+            <h3 id="pv-lightbox-title"></h3>
+            <p id="pv-lightbox-date"></p>
         </div>
     </div>
 </div>
@@ -218,17 +260,39 @@ $all_tags = $tag_model->get_tags();
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+.pv-images-modal-content {
+    max-width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+}
+
 .pv-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px;
     border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
 }
 
 .pv-modal-header h2 {
     margin: 0;
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pv-tag-badge-inline {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .pv-modal-close {
@@ -281,6 +345,99 @@ $all_tags = $tag_model->get_tags();
     justify-content: flex-end;
     margin-top: 20px;
 }
+
+/* Images Grid in Modal */
+.pv-modal-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.pv-image-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pv-image-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.pv-image-wrapper {
+    position: relative;
+    padding-bottom: 75%;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.pv-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pv-image-info {
+    padding: 10px;
+}
+
+.pv-image-title {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pv-image-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Lightbox */
+.pv-lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    margin: 5% auto;
+}
+
+.pv-lightbox-content .pv-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+}
+
+.pv-lightbox-image-container {
+    max-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.pv-lightbox-image-container img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+.pv-lightbox-info {
+    padding: 20px;
+}
+
+.pv-lightbox-info h3 {
+    margin: 0 0 10px 0;
+}
 </style>
 
 <script>
@@ -313,9 +470,13 @@ jQuery(document).ready(function($) {
         $('#pv-tag-modal').fadeIn(300);
     });
     
-    // Close modal
-    $('.pv-modal-close, .pv-cancel-tag, .pv-modal-overlay').on('click', function() {
-        $('#pv-tag-modal').fadeOut(300);
+    // Close modals
+    $('.pv-modal-close, .pv-cancel-tag').on('click', function() {
+        $(this).closest('.pv-modal').fadeOut(300);
+    });
+    
+    $('.pv-modal-overlay').on('click', function() {
+        $(this).closest('.pv-modal').fadeOut(300);
     });
     
     // Save tag
@@ -343,7 +504,7 @@ jQuery(document).ready(function($) {
             data.tag_id = tagId;
         } else {
             data.tag_name = tagName;
-            data.image_id = 0; // Not associated with any image yet
+            data.image_id = 0;
         }
         
         $('#pv-save-tag').prop('disabled', true).text('<?php _e('Saving...', 'photovault'); ?>');
@@ -390,8 +551,6 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     $card.fadeOut(300, function() {
                         $(this).remove();
-                        
-                        // Check if no tags left
                         if ($('.pv-tag-card').length === 0) {
                             location.reload();
                         }
@@ -404,6 +563,86 @@ jQuery(document).ready(function($) {
                 alert('<?php _e('Error deleting tag', 'photovault'); ?>');
             }
         });
+    });
+    
+    // View images by tag
+    $('.pv-view-tag-images').on('click', function(e) {
+        e.preventDefault();
+        
+        const tagId = $(this).data('tag-id');
+        const tagName = $(this).data('tag-name');
+        const tagColor = $(this).data('tag-color');
+        
+        // Update modal title
+        $('#pv-modal-tag-name').text(tagName);
+        $('#pv-modal-tag-badge').css('background-color', tagColor).text(tagName);
+        
+        // Show modal and loading state
+        $('#pv-images-modal').fadeIn(300);
+        $('#pv-images-loading').show();
+        $('#pv-images-grid').hide().empty();
+        $('#pv-images-empty').hide();
+        
+        // Load images
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'get_images_by_tag',
+                nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>',
+                tag_id: tagId,
+                limit: 50,
+                offset: 0
+            },
+            success: function(response) {
+                $('#pv-images-loading').hide();
+                
+                if (response.success && response.data.images && response.data.images.length > 0) {
+                    const images = response.data.images;
+                    const $grid = $('#pv-images-grid');
+                    
+                    images.forEach(function(image) {
+                        const html = `
+                            <div class="pv-image-item" data-full-url="${image.full_url || image.thumbnail_url}">
+                                <div class="pv-image-wrapper">
+                                    <img src="${image.thumbnail_url}" alt="${image.title}" loading="lazy">
+                                </div>
+                                <div class="pv-image-info">
+                                    <div class="pv-image-title">${image.title}</div>
+                                    <div class="pv-image-date">${image.formatted_date}</div>
+                                </div>
+                            </div>
+                        `;
+                        $grid.append(html);
+                    });
+                    
+                    $grid.show();
+                } else {
+                    $('#pv-images-empty').show();
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#pv-images-loading').hide();
+                $('#pv-images-empty').html(`
+                    <p style="color: #dc2626;">
+                        <?php _e('Error loading images. Please try again.', 'photovault'); ?>
+                    </p>
+                `).show();
+                console.error('AJAX Error:', error, xhr.responseText);
+            }
+        });
+    });
+    
+    // View image in lightbox
+    $(document).on('click', '.pv-image-item', function() {
+        const fullUrl = $(this).data('full-url');
+        const title = $(this).find('.pv-image-title').text();
+        const date = $(this).find('.pv-image-date').text();
+        
+        $('#pv-lightbox-image').attr('src', fullUrl);
+        $('#pv-lightbox-title').text(title);
+        $('#pv-lightbox-date').text(date);
+        $('#pv-lightbox-modal').fadeIn(300);
     });
 });
 </script>
