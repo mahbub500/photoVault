@@ -10,6 +10,7 @@ namespace PhotoVault\Core;
 use PhotoVault\Admin\MenuManager;
 use PhotoVault\Admin\AssetManager;
 use PhotoVault\Admin\SettingsManager;
+use PhotoVault\Admin\TagManager;
 use PhotoVault\Controllers\ImageController;
 use PhotoVault\Controllers\AlbumController;
 use PhotoVault\Controllers\TagController;
@@ -83,11 +84,11 @@ class Plugin {
      * Initialize all controllers
      */
     private function init_controllers() {
-        $this->image_controller = new ImageController();
-        $this->album_controller = new AlbumController();
-        $this->tag_controller = new TagController();
-        $this->share_controller = new ShareController();
-        $this->timeline_controller = new TimelineController();
+        $this->image_controller     = new ImageController();
+        $this->album_controller     = new AlbumController();
+        $this->tag_controller       = new TagController();
+        $this->share_controller     = new ShareController();
+        $this->timeline_controller  = new TimelineController();
         $this->settings_controller  = new SettingsController();
     }
     
@@ -98,6 +99,7 @@ class Plugin {
         // Admin area initialization
         if (is_admin()) {
             new MenuManager();
+            new TagManager();
             new SettingsManager();
         }
             new AssetManager();

@@ -61,16 +61,6 @@ class MenuManager {
             [$this, 'render_timeline_page']
         );
         
-        // Tags submenu
-        add_submenu_page(
-            'photovault',
-            __('Tags', 'photovault'),
-            __('Tags', 'photovault'),
-            'upload_files',
-            'photovault-tags',
-            [$this, 'render_tags_page']
-        );
-        
         // Shared with Me submenu
         add_submenu_page(
             'photovault',
@@ -81,15 +71,6 @@ class MenuManager {
             [$this, 'render_shared_page']
         );
         
-        // Settings submenu
-        // add_submenu_page(
-        //     'photovault',
-        //     __('Settings', 'photovault'),
-        //     __('Settings', 'photovault'),
-        //     'manage_options',                          // Only admins
-        //     'photovault-settings',
-        //     [$this, 'render_settings_page']
-        // );
     }
     
     /**
@@ -162,51 +143,7 @@ class MenuManager {
      */
     public function render_timeline_page() {
         $this->render_view('timeline');
-    }
-    
-    /**
-     * Render tags page
-     */
-    public function render_tags_page() {
-        // Check if viewing a specific tag
-        if (isset($_GET['tag_id']) && !empty($_GET['tag_id'])) {
-            $this->render_tag_view_page();
-        } else {
-            $this->render_view('tags');
-        }
-    }
-    
-    /**
-     * Render tag view page (images by tag)
-     */
-    private function render_tag_view_page() {
-        $tag_controller = new TagController();
-        $data = $tag_controller->get_tag_view_data();
-        
-        // Extract variables for the template
-        $tag = $data['tag'];
-        $images = $data['images'];
-        $error = $data['error'];
-        
-        // Load the tag view template
-        $view_file = PHOTOVAULT_PLUGIN_DIR . 'src/Admin/Views/tag-view.php';
-        
-        if (file_exists($view_file)) {
-            include $view_file;
-        } else {
-            echo '<div class="wrap">';
-            echo '<h1>' . __('Tag View', 'photovault') . '</h1>';
-            if ($error) {
-                echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
-            } else {
-                echo '<div class="notice notice-error"><p>' . __('Template file not found.', 'photovault') . '</p></div>';
-            }
-            echo '<a href="' . esc_url(admin_url('admin.php?page=photovault-tags')) . '" class="button">';
-            echo __('Back to Tags', 'photovault');
-            echo '</a>';
-            echo '</div>';
-        }
-    }
+    }  
     
     /**
      * Render shared with me page
