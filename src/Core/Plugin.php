@@ -99,9 +99,9 @@ class Plugin {
         // Admin area initialization
         if (is_admin()) {
             new MenuManager();
+            new TagManager();
             new SettingsManager();
         }
-            new TagManager();
             new AssetManager();
         
         // Frontend initialization
