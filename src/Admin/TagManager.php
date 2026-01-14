@@ -13,6 +13,40 @@ class TagManager {
     
     public function __construct() {
         add_action('admin_menu', [$this, 'register_menus']);
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
+    }
+
+    /**
+     * Enqueue admin assets
+     *
+     * @param string $hook Current admin page hook
+     */
+    public function enqueue_admin_assets($hook) {
+        // Only load on PhotoVault pages
+        if (strpos($hook, 'photovault-tags') === false) {
+            return;
+        }
+        
+        // Enqueue WordPress media uploader
+        wp_enqueue_media();
+        
+        // Admin CSS
+        wp_enqueue_style(
+            'photovault-admin-tag',
+            PHOTOVAULT_PLUGIN_URL . 'assets/css/admin/tag.css',
+            [],
+            PHOTOVAULT_VERSION
+        );
+
+        // Admin JavaScript
+        wp_enqueue_script(
+            'photovault-admin-tag',
+            PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/tag.js',
+            ['jquery', 'wp-util'],
+            PHOTOVAULT_VERSION,
+            true
+        );      
+        
     }
     
     /**

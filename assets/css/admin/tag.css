@@ -1,0 +1,480 @@
+.photovault-tags {
+    padding: 20px 0;
+}
+
+.pv-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 2px dashed #d1d5db;
+    margin-top: 30px;
+}
+
+.pv-empty-state .dashicons {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.pv-empty-state h2 {
+    color: #374151;
+    margin-bottom: 10px;
+}
+
+.pv-empty-state p {
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+.pv-tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.pv-tag-card {
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.pv-tag-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.pv-tag-header {
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+.pv-tag-name {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.pv-tag-count {
+    display: block;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.pv-tag-actions {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pv-tag-actions .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.pv-tag-actions .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Modal Styles */
+.pv-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999;
+}
+
+.pv-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.pv-modal-content {
+    position: relative;
+    max-width: 500px;
+    margin: 100px auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.pv-images-modal-content {
+    max-width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+}
+
+.pv-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+}
+
+.pv-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pv-tag-badge-inline {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pv-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.pv-modal-close:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.pv-modal-body {
+    padding: 20px;
+}
+
+.pv-form-group {
+    margin-bottom: 20px;
+}
+
+.pv-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.pv-form-group input[type="text"],
+.pv-form-group input[type="color"] {
+    width: 100%;
+}
+
+.pv-form-group input[type="color"] {
+    height: 40px;
+    cursor: pointer;
+}
+
+.pv-form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Images Grid in Modal */
+.pv-modal-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.pv-image-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pv-image-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.pv-image-wrapper {
+    position: relative;
+    padding-bottom: 75%;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.pv-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pv-remove-tag-from-image {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    z-index: 5;
+}
+
+.pv-remove-tag-from-image:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.pv-remove-tag-from-image .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.pv-image-item:hover .pv-remove-tag-from-image {
+    display: flex;
+}
+
+.pv-image-info {
+    padding: 10px;
+}
+
+.pv-image-title {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pv-image-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Lightbox */
+.pv-lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    margin: 5% auto;
+}
+
+.pv-lightbox-content .pv-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+}
+
+.pv-lightbox-image-container {
+    max-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.pv-lightbox-image-container img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+.pv-lightbox-info {
+    padding: 20px;
+}
+
+.pv-lightbox-info h3 {
+    margin: 0 0 10px 0;
+}
+/* Assign Images Modal */
+.pv-assign-modal-content {
+    max-width: 95%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pv-assign-modal-content .pv-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.pv-assign-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.pv-assign-filters input {
+    flex: 1;
+}
+
+.pv-assign-status {
+    padding: 10px 15px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: #1e40af;
+    font-weight: 600;
+}
+
+#pv-selected-count {
+    font-size: 18px;
+    color: #1e3a8a;
+}
+
+.pv-assign-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.pv-assign-image-item {
+    position: relative;
+    background: white;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pv-assign-image-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.pv-assign-image-item.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.pv-assign-image-wrapper {
+    position: relative;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.pv-assign-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pv-assign-checkbox {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: all 0.2s;
+}
+
+.pv-assign-image-item.selected .pv-assign-checkbox {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.pv-assign-checkbox .dashicons {
+    color: white;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    display: none;
+}
+
+.pv-assign-image-item.selected .pv-assign-checkbox .dashicons {
+    display: block;
+}
+
+.pv-assign-image-title {
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: white;
+}
+
+.pv-assign-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    position: sticky;
+    bottom: 22px;
+    background: white;
+}
+
+.pv-assign-actions .button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#pv-assign-submit {
+    flex: 1;
+}
