@@ -81,6 +81,25 @@ class AssetManager {
             );
         }
 
+        if (str_contains($hook, 'photovault') ) {
+
+            // Frontend CSS
+            wp_enqueue_style(
+                'photovault-admin',
+                PHOTOVAULT_PLUGIN_URL . 'assets/css/admin/gallery.css',
+                [],
+                PHOTOVAULT_VERSION
+            );
+            // Frontend JavaScript
+            wp_enqueue_script(
+                'photovault-admin',
+                PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/gallery.js',
+                ['jquery'],
+                PHOTOVAULT_VERSION,
+                true
+            );
+        }
+
         
         
         if (strpos($hook, 'photovault-timeline') !== false) {
@@ -117,13 +136,7 @@ class AssetManager {
      * Enqueue frontend assets
      */
     public function enqueue_frontend_assets() {
-        // Frontend CSS
-        wp_enqueue_style(
-            'photovault-frontend',
-            PHOTOVAULT_PLUGIN_URL . 'assets/css/frontend/gallery.css',
-            [],
-            PHOTOVAULT_VERSION
-        );
+        
         
         wp_enqueue_style(
             'photovault-lightbox',
@@ -132,14 +145,7 @@ class AssetManager {
             PHOTOVAULT_VERSION
         );
         
-        // Frontend JavaScript
-        wp_enqueue_script(
-            'photovault-frontend',
-            PHOTOVAULT_PLUGIN_URL . 'assets/js/frontend/gallery.js',
-            ['jquery'],
-            PHOTOVAULT_VERSION,
-            true
-        );
+        
         
         wp_enqueue_script(
             'photovault-lightbox',

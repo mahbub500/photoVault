@@ -57,7 +57,6 @@
             // View mode toggle
             $('.pv-view-btn').on('click', function() {
                 $('.pv-view-btn').removeClass('active');
-                alert( 'test' );
                 $(this).addClass('active');
                 const view = $(this).data('view');
                 self.setViewMode(view);
