@@ -35,7 +35,7 @@ class Plugin {
      */
     private $image_controller;
     private $album_controller;
-    private $tag_controller;
+    
     private $share_controller;
     private $timeline_controller;
     private $settings_controller;
@@ -66,7 +66,7 @@ class Plugin {
     public function init() {
         $this->load_textdomain();
         $this->init_controllers();
-        $this->init_hooks();
+        $this->init_managers();
     }
     
     /**
@@ -86,7 +86,7 @@ class Plugin {
     private function init_controllers() {
         $this->image_controller     = new ImageController();
         $this->album_controller     = new AlbumController();
-        $this->tag_controller       = new TagController();
+        
         $this->share_controller     = new ShareController();
         $this->timeline_controller  = new TimelineController();
         $this->settings_controller  = new SettingsController();
@@ -95,13 +95,13 @@ class Plugin {
     /**
      * Initialize WordPress hooks
      */
-    private function init_hooks() {
+    private function init_managers() {
         // Admin area initialization
         if (is_admin()) {
             new MenuManager();
-            new TagManager();
             new SettingsManager();
         }
+            new TagManager();
             new AssetManager();
         
         // Frontend initialization
@@ -127,20 +127,7 @@ class Plugin {
         add_action('wp_ajax_pv_update_album', [$this->album_controller, 'update']);
         add_action('wp_ajax_pv_delete_album', [$this->album_controller, 'delete']);
         
-        // Tag operations
-       
-        add_action('wp_ajax_add_tag', [$this->tag_controller, 'add_tag']);
-        add_action('wp_ajax_get_tags', [$this->tag_controller, 'get_tags']);
-        add_action('wp_ajax_get_images_by_tag', [$this->tag_controller, 'get_images_by_tag']);
-        add_action('wp_ajax_remove_tag', [$this->tag_controller, 'remove_tag']);
-        add_action('wp_ajax_update_tag', [$this->tag_controller, 'update_tag']);
-        add_action('wp_ajax_delete_tag', [$this->tag_controller, 'delete_tag']);
-        add_action('wp_ajax_get_image_tags', [$this->tag_controller, 'get_image_tags']);
-
-        add_action('wp_ajax_pv_get_user_images', [$this->tag_controller, 'get_user_images_for_assignment']);
-        add_action('wp_ajax_pv_assign_images_to_tag', [$this->tag_controller, 'assign_images_to_tag']);
-        add_action('wp_ajax_pv_get_all_images', [$this->tag_controller, 'get_all_user_images']);
-        add_action('wp_ajax_pv_bulk_assign_tag', [$this->tag_controller, 'bulk_assign_tag']);
+        
         
         // Share operations
         add_action('wp_ajax_pv_share_item', [$this->share_controller, 'share']);

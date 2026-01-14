@@ -52,7 +52,7 @@ jQuery(document).ready(function($) {
         const action = isEditMode ? 'update_tag' : 'add_tag';
         const data = {
             action: action,
-            nonce: 'photovault_nonce',
+            nonce: photoVaultTag.photovault_nonce,
             name: tagName,
             color: tagColor
         };
@@ -101,7 +101,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'delete_tag',
-                nonce: 'photovault_nonce',
+                nonce: photoVaultTag.photovault_nonce,
                 tag_id: tagId
             },
             success: function(response) {
@@ -146,7 +146,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'get_images_by_tag',
-                nonce: 'photovault_nonce',
+                nonce: photoVaultTag.photovault_nonce,
                 tag_id: tagId,
                 limit: 50,
                 offset: 0
@@ -234,7 +234,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'remove_tag',
-                nonce: 'photovault_nonce',
+                nonce: photoVaultTag.photovault_nonce,
                 image_id: imageId,
                 tag_id: tagId
             },
@@ -305,7 +305,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pv_get_all_images',
-                nonce: 'photovault_nonce'
+                nonce: photoVaultTag.photovault_nonce
             },
             success: function(response) {
                 $('#pv-assign-loading').hide();
@@ -408,7 +408,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pv_bulk_assign_tag',
-                nonce: 'photovault_nonce',
+                nonce: photoVaultTag.photovault_nonce,
                 tag_id: currentAssignTagId,
                 image_ids: selectedImages
             },

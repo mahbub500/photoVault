@@ -10,10 +10,33 @@ namespace PhotoVault\Admin;
 use PhotoVault\Controllers\TagController;
 
 class TagManager {
+
+    private $tag_controller;
     
     public function __construct() {
+
+        $this->tag_controller = new TagController();
+
         add_action('admin_menu', [$this, 'register_menus']);
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+        $this->render_tag_ajax();
+    }
+
+    private function render_tag_ajax(){
+        // Tag operations
+       
+        add_action('wp_ajax_add_tag', [$this->tag_controller, 'add_tag']);
+        add_action('wp_ajax_get_tags', [$this->tag_controller, 'get_tags']);
+        add_action('wp_ajax_get_images_by_tag', [$this->tag_controller, 'get_images_by_tag']);
+        add_action('wp_ajax_remove_tag', [$this->tag_controller, 'remove_tag']);
+        add_action('wp_ajax_update_tag', [$this->tag_controller, 'update_tag']);
+        add_action('wp_ajax_delete_tag', [$this->tag_controller, 'delete_tag']);
+        add_action('wp_ajax_get_image_tags', [$this->tag_controller, 'get_image_tags']);
+
+        add_action('wp_ajax_pv_get_user_images', [$this->tag_controller, 'get_user_images_for_assignment']);
+        add_action('wp_ajax_pv_assign_images_to_tag', [$this->tag_controller, 'assign_images_to_tag']);
+        add_action('wp_ajax_pv_get_all_images', [$this->tag_controller, 'get_all_user_images']);
+        add_action('wp_ajax_pv_bulk_assign_tag', [$this->tag_controller, 'bulk_assign_tag']);
     }
 
     /**
@@ -45,8 +68,37 @@ class TagManager {
             ['jquery', 'wp-util'],
             PHOTOVAULT_VERSION,
             true
-        );      
+        );
         
+        // Localize script
+        wp_localize_script(
+            'photovault-admin-tag',
+            'photoVaultTag',
+            [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'photovault_nonce' => wp_create_nonce('photovault_nonce'),
+                'i18n' => [
+                    'addNewTag' => __('Add New Tag', 'photovault'),
+                    'editTag' => __('Edit Tag', 'photovault'),
+                    'pleaseEnterTagName' => __('Please enter a tag name', 'photovault'),
+                    'saving' => __('Saving...', 'photovault'),
+                    'saveTag' => __('Save Tag', 'photovault'),
+                    'errorSavingTag' => __('Error saving tag', 'photovault'),
+                    'deleteTagConfirm' => __('Are you sure you want to delete this tag? This will remove it from all images.', 'photovault'),
+                    'errorDeletingTag' => __('Error deleting tag', 'photovault'),
+                    'removeTagFromImage' => __('Remove tag from this image', 'photovault'),
+                    'errorLoadingImages' => __('Error loading images. Please try again.', 'photovault'),
+                    'removeTagConfirm' => __('Remove this tag from the image?', 'photovault'),
+                    'failedToRemoveTag' => __('Failed to remove tag', 'photovault'),
+                    'errorRemovingTag' => __('Error removing tag', 'photovault'),
+                    'images' => __('images', 'photovault'),
+                    'pleaseSelectImage' => __('Please select at least one image', 'photovault'),
+                    'assigning' => __('Assigning...', 'photovault'),
+                    'assignSelectedImages' => __('Assign Selected Images', 'photovault'),
+                    'errorAssigningImages' => __('Error assigning images', 'photovault')
+                ]
+            ]
+        );
     }
     
     /**
@@ -108,10 +160,6 @@ class TagManager {
             echo '</div>';
         }
     }    
-    
-    
-    
-   
     
     /**
      * Render view template
