@@ -132,6 +132,23 @@ class AssetManager {
                 'selectFiles' => __('Select files', 'photovault'),
                 'dragDrop' => __('Drag & drop images here', 'photovault'),
                 'processing' => __('Processing...', 'photovault'),
+                'noAlbums' => __('No albums found. Create your first album!', 'photovault'),
+                'errorLoadingAlbums' => __('Error loading albums. Please try again.', 'photovault'),
+                'viewAlbum' => __('View Album', 'photovault'),
+                'images' => __('images', 'photovault'),
+                'createNewAlbum' => __('Create New Album', 'photovault'),
+                'editAlbum' => __('Edit Album', 'photovault'),
+                'albumNameRequired' => __('Album name is required', 'photovault'),
+                'saving' => __('Saving...', 'photovault'),
+                'saveAlbum' => __('Save Album', 'photovault'),
+                'errorSavingAlbum' => __('Error saving album. Please try again.', 'photovault'),
+                'errorLoadingAlbum' => __('Error loading album details.', 'photovault'),
+                'deleteAlbumConfirm' => __('Are you sure you want to delete this album? This action cannot be undone.', 'photovault'),
+                'errorDeletingAlbum' => __('Error deleting album. Please try again.', 'photovault'),
+                'noImagesInAlbum' => __('No images in this album yet. Add some images to get started!', 'photovault'),
+                'removeImageConfirm' => __('Remove this image from the album?', 'photovault'),
+                'errorRemovingImage' => __('Error removing image. Please try again.', 'photovault'),
+                'featureComingSoon' => __('This feature is coming soon!', 'photovault'),
             ]
         ]);
     }
