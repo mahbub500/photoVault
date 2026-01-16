@@ -323,7 +323,7 @@ class SettingsManager {
         check_admin_referer('photovault_import_settings');
         
         if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
-            wp_redirect(add_query_arg([
+            wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
                 'error' => 'upload_failed'
@@ -335,7 +335,7 @@ class SettingsManager {
         $settings = json_decode($file_content, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
-            wp_redirect(add_query_arg([
+            wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
                 'error' => 'invalid_json'
@@ -344,14 +344,14 @@ class SettingsManager {
         }
         
         if ($this->controller->import_settings($settings)) {
-            wp_redirect(add_query_arg([
+            wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
                 'settings-updated' => 'true',
                 'imported' => 'true'
             ], admin_url('admin.php')));
         } else {
-            wp_redirect(add_query_arg([
+            wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
                 'error' => 'import_failed'
@@ -371,14 +371,14 @@ class SettingsManager {
         check_admin_referer('photovault_reset_settings');
         
         if ($this->controller->reset_all_settings()) {
-            wp_redirect(add_query_arg([
+            wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
                 'settings-updated' => 'true',
                 'reset' => 'true'
             ], admin_url('admin.php')));
         } else {
-            wp_redirect(add_query_arg([
+            wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
                 'error' => 'reset_failed'
