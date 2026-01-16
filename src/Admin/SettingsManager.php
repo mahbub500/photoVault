@@ -295,9 +295,8 @@ class SettingsManager {
      */
     public function export_settings() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'photovault'));
+            wp_die(esc_html__('Unauthorized', 'photovault'));
         }
-        
         check_admin_referer('photovault_export_settings');
         
         $settings = $this->controller->export_settings();
@@ -318,7 +317,7 @@ class SettingsManager {
      */
     public function import_settings() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'photovault'));
+            wp_die(esc_html__('Unauthorized', 'photovault'));
         }
         
         check_admin_referer('photovault_import_settings');
@@ -366,7 +365,7 @@ class SettingsManager {
      */
     public function reset_settings() {
         if (!current_user_can('manage_options')) {
-            wp_die(__('Unauthorized', 'photovault'));
+            wp_die(esc_html__('Unauthorized', 'photovault'));
         }
         
         check_admin_referer('photovault_reset_settings');
