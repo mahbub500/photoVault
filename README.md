@@ -1,473 +1,206 @@
 === PhotoVault ===
 Contributors: mahbubmr500
+Donate link: https://example.com/donate
 Tags: gallery, photos, albums, image management, private gallery
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 6.7
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A powerful private photo gallery and album management system for WordPress.
+A powerful private photo gallery and album management system with advanced image processing, EXIF data extraction, and seamless album organization.
 
 == Description ==
 
-# PhotoVault - Complete Plugin Structure (Composer-Based)
-
-## 📁 Complete Directory Structure
-
-```
-photovault/
-├── composer.json                           # Composer configuration
-├── photovault.php                         # Main plugin file (bootstrap)
-├── README.md                              # Documentation
-├── .gitignore                             # Git ignore file
-├── phpcs.xml                              # PHP CodeSniffer configuration
-│
-├── src/                                   # Source files (PSR-4 autoloaded)
-│   ├── Core/
-│   │   ├── Plugin.php                     # Main plugin class
-│   │   ├── Activator.php                  # Activation handler
-│   │   └── Deactivator.php                # Deactivation handler
-│   │
-│   ├── Controllers/                       # AJAX/Request handlers
-│   │   ├── ImageController.php            # Image operations
-│   │   ├── AlbumController.php            # Album operations
-│   │   ├── TagController.php              # Tag operations
-│   │   ├── ShareController.php            # Sharing operations
-│   │   └── TimelineController.php         # Timeline operations
-│   │
-│   ├── Models/                            # Database models
-│   │   ├── Image.php                      # Image model
-│   │   ├── Album.php                      # Album model
-│   │   ├── Tag.php                        # Tag model
-│   │   └── Share.php                      # Share model
-│   │
-│   ├── Services/                          # Business logic
-│   │   ├── ImageUploader.php              # Upload handling
-│   │   ├── ImageProcessor.php             # Image processing
-│   │   ├── ExifExtractor.php              # EXIF data extraction
-│   │   └── ThumbnailGenerator.php         # Thumbnail creation
-│   │
-│   ├── Admin/                             # Admin area
-│   │   ├── MenuManager.php                # Admin menu
-│   │   ├── AssetManager.php               # CSS/JS enqueuing
-│   │   ├── SettingsPage.php               # Settings page
-│   │   └── Views/                         # Admin templates
-│   │       ├── main.php
-│   │       ├── albums.php
-│   │       ├── timeline.php
-│   │       └── settings.php
-│   │
-│   ├── Frontend/                          # Frontend functionality
-│   │   ├── ShortcodeManager.php           # Shortcode handler
-│   │   ├── Shortcodes/                    # Individual shortcodes
-│   │   │   ├── GalleryShortcode.php
-│   │   │   ├── AlbumShortcode.php
-│   │   │   ├── UploadShortcode.php
-│   │   │   └── TimelineShortcode.php
-│   │   └── Views/                         # Frontend templates
-│   │       ├── gallery.php
-│   │       ├── album.php
-│   │       ├── upload-form.php
-│   │       └── timeline.php
-│   │
-│   └── Utilities/                         # Helper classes
-│       ├── Validator.php                  # Input validation
-│       ├── Sanitizer.php                  # Data sanitization
-│       └── Helper.php                     # General helpers
-│
-├── assets/                                # Static assets
-│   ├── css/
-│   │   ├── admin/
-│   │   │   ├── main.css
-│   │   │   ├── albums.css
-│   │   │   └── timeline.css
-│   │   └── frontend/
-│   │       ├── gallery.css
-│   │       ├── upload.css
-│   │       └── lightbox.css
-│   │
-│   ├── js/
-│   │   ├── admin/
-│   │   │   ├── main.js
-│   │   │   ├── upload.js
-│   │   │   ├── albums.js
-│   │   │   └── timeline.js
-│   │   └── frontend/
-│   │       ├── gallery.js
-│   │       ├── upload.js
-│   │       └── lightbox.js
-│   │
-│   └── images/
-│       ├── placeholder.png
-│       └── icons/
-│           ├── upload.svg
-│           ├── album.svg
-│           └── share.svg
-│
-├── languages/                             # Translation files
-│   ├── photovault.pot                     # Template file
-│   ├── photovault-en_US.po
-│   └── photovault-en_US.mo
-│
-├── tests/                                 # PHPUnit tests
-│   ├── bootstrap.php
-│   ├── Unit/
-│   │   ├── ImageTest.php
-│   │   ├── AlbumTest.php
-│   │   └── UploaderTest.php
-│   └── Integration/
-│       └── UploadFlowTest.php
-│
-└── vendor/                                # Composer dependencies (auto-generated)
-    └── autoload.php
-```
-
----
-
-## 🚀 Installation Steps
+PhotoVault is a comprehensive photo gallery and album management plugin for WordPress that transforms your website into a professional photo management system. Perfect for photographers, creative agencies, and anyone who needs to organize and showcase their images beautifully.
 
-### 1. Clone/Download Plugin
-
-```bash
-cd wp-content/plugins/
-git clone [your-repo] photovault
-cd photovault
-```
-
-### 2. Install Composer Dependencies
-
-```bash
-composer install --no-dev
-```
-
-For development:
-```bash
-composer install
-```
-
-### 3. Set Permissions
-
-```bash
-chmod 755 photovault
-chmod 644 photovault.php
-find src -type f -exec chmod 644 {} \;
-find assets -type f -exec chmod 644 {} \;
-```
-
-### 4. Activate Plugin
-
-Go to WordPress Admin → Plugins → Activate "PhotoVault"
-
----
-
-## 📝 File Descriptions
-
-### Core Files
-
-#### `composer.json`
-- Composer configuration
-- PSR-4 autoloading setup
-- Dependencies management
-
-#### `photovault.php`
-- Plugin bootstrap file
-- Loads Composer autoloader
-- Registers activation/deactivation hooks
-
-#### `src/Core/Plugin.php`
-- Main plugin class
-- Initializes all components
-- Registers hooks and filters
-
-#### `src/Core/Activator.php`
-- Creates database tables
-- Sets up upload directories
-- Initializes default settings
-
-### Controllers
-
-#### `src/Controllers/ImageController.php`
-- **upload()** - Handle image upload with chunking
-- **get_images()** - Retrieve images with filters
-- **update()** - Update image metadata
-- **delete()** - Delete image and cleanup
-
-### Services
-
-#### `src/Services/ImageUploader.php`
-- **upload()** - Standard upload
-- **upload_from_url()** - Upload from external URL
-- **batch_upload()** - Multiple file upload
-- **chunked_upload()** - Large file chunking
-- **validate_file()** - File validation
-
-#### `src/Services/ImageProcessor.php`
-- **process()** - Main processing pipeline
-- **extract_exif()** - EXIF data extraction
-- **create_thumbnails()** - Generate thumbnails
-- **add_watermark()** - Add watermark
-- **optimize()** - File size optimization
-
-### Models
-
-#### `src/Models/Image.php`
-- **create()** - Insert new image
-- **get_images()** - Query with filters
-- **update()** - Update record
-- **delete()** - Delete with cleanup
-- **add_tags()** - Manage tags
-- **add_to_album()** - Album relationship
-
----
-
-## 🎯 Key Features Implementation
+= Key Features =
 
-### 1. Advanced Image Upload
+**Advanced Image Management**
+* Upload single or multiple images with drag-and-drop support
+* Chunked upload support for large files (automatic handling of files over 5MB)
+* Import images from external URLs
+* Batch processing for multiple uploads
+* Automatic thumbnail generation with customizable dimensions
 
-**Chunked Upload** (for large files):
-```php
-// Automatically handles files > 5MB
-$uploader->chunked_upload($file, $chunk_index, $total_chunks);
-```
+**Smart Organization**
+* Create unlimited photo albums
+* Organize images with tags for easy filtering
+* Timeline view to browse photos by date
+* Advanced search and filtering options
+* Bulk operations for efficient management
 
-**Batch Upload**:
-```php
-// Upload multiple files at once
-$results = $uploader->batch_upload($files_array);
-```
-
-**URL Upload**:
-```php
-// Import from external URL
-$result = $uploader->upload_from_url('https://example.com/image.jpg');
-```
-
-### 2. Image Processing
-
-**EXIF Extraction**:
-- Camera model
-- Lens information
-- GPS coordinates
-- Exposure settings
-
-**Thumbnail Generation**:
-- Multiple sizes
-- Custom dimensions
-- Quality optimization
-
-**Watermarking**:
-- Text watermark
-- Position customization
-- Opacity control
-
-### 3. Database Schema
-
-**Enhanced Tables**:
-- File size tracking
-- Dimensions storage
-- MIME type detection
-- Modified date tracking
-- Upload queue for batch processing
-
----
-
-## 📦 Composer Commands
-
-### Install Dependencies
-```bash
-composer install
-```
-
-### Update Dependencies
-```bash
-composer update
-```
-
-### Autoload Optimization
-```bash
-composer dump-autoload -o
-```
-
-### Run Tests
-```bash
-composer test
-```
-
-### Code Sniffer
-```bash
-composer phpcs
-```
-
----
-
-## 🔧 Configuration
-
-### Upload Settings
-
-Set in `src/Core/Activator.php`:
-
-```php
-'photovault_max_upload_size' => 10485760,     // 10MB
-'photovault_allowed_types' => ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-'photovault_thumbnail_width' => 300,
-'photovault_thumbnail_height' => 300,
-'photovault_thumbnail_quality' => 85,
-```
-
-### Modify via Settings Page
-
-Access: PhotoVault → Settings
-
----
-
-## 🎨 Usage Examples
-
-### Upload Image via AJAX
-
-```javascript
-const formData = new FormData();
-formData.append('file', file);
-formData.append('title', 'My Image');
-formData.append('tags', 'vacation,beach');
-formData.append('album_id', 5);
-
-$.ajax({
-    url: photoVault.ajaxUrl,
-    type: 'POST',
-    data: formData,
-    processData: false,
-    contentType: false,
-    success: function(response) {
-        console.log('Upload success:', response.data);
-    }
-});
-```
-
-### Chunked Upload Example
-
-```javascript
-// For files > 5MB
-const chunkSize = 1024 * 1024; // 1MB chunks
-const chunks = Math.ceil(file.size / chunkSize);
-
-for (let i = 0; i < chunks; i++) {
-    const chunk = file.slice(
-        i * chunkSize,
-        Math.min((i + 1) * chunkSize, file.size)
-    );
-    
-    const formData = new FormData();
-    formData.append('file', chunk);
-    formData.append('chunk_index', i);
-    formData.append('total_chunks', chunks);
-    formData.append('unique_id', uniqueId);
-    
-    // Upload chunk...
-}
-```
-
----
-
-## 🔒 Security Features
-
-- ✅ Nonce verification on all AJAX requests
-- ✅ Capability checks (upload_files)
-- ✅ File type validation
-- ✅ File size limits
-- ✅ SQL injection prevention (prepared statements)
-- ✅ XSS protection (sanitization/escaping)
-- ✅ CSRF protection
-- ✅ Directory index prevention
-- ✅ PHP file execution blocking in uploads
-
----
-
-## 🧪 Testing
-
-### Run Unit Tests
-```bash
-./vendor/bin/phpunit tests/Unit
-```
-
-### Run Integration Tests
-```bash
-./vendor/bin/phpunit tests/Integration
-```
-
-### Run All Tests
-```bash
-composer test
-```
-
----
-
-## 📊 Performance Optimization
-
-### Implemented:
-- PSR-4 autoloading
-- Optimized database queries
-- Indexed database columns
-- Thumbnail caching
-- Lazy loading support
-- Chunked uploads for large files
-
-### Recommended:
-- Enable PHP OPcache
-- Use Redis/Memcached for object caching
-- CDN for assets
-- Image optimization tools
-
----
-
-## 🔄 Updates & Maintenance
-
-### Version Control
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-### Update Plugin Version
-Edit these files:
-1. `photovault.php` - Plugin header
-2. `composer.json` - Version field
-3. `README.md` - Changelog
-
----
-
-## 📞 Support & Development
-
-### Development Mode
-```php
-// In wp-config.php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-```
-
-### Enable Error Logging
-Check: `wp-content/debug.log`
-
----
-
-## 🎉 Ready to Use!
-
-The plugin is now fully structured with:
-- ✅ Composer autoloading
-- ✅ PSR-4 namespace
-- ✅ Separated concerns (MVC-like)
-- ✅ Advanced upload functionality
-- ✅ Image processing pipeline
-- ✅ EXIF extraction
-- ✅ Chunked uploads
-- ✅ Batch processing
-- ✅ Complete security
-
-Start developing by running:
-```bash
-composer install
-```
-
-Then activate in WordPress!# photoVault
-# photoVault
+**Image Processing**
+* EXIF data extraction (camera model, lens, GPS, exposure settings)
+* Automatic watermarking with customizable text and positioning
+* Multiple thumbnail sizes with quality optimization
+* Image optimization for faster loading
+
+**Privacy & Sharing**
+* Private galleries with access control
+* Secure sharing with password protection
+* Generate shareable links with expiration dates
+* User-specific galleries and albums
+
+**Developer Friendly**
+* PSR-4 compliant code structure
+* Composer autoloading
+* Extensive hooks and filters for customization
+* RESTful API ready
+* Clean, documented codebase
+
+= Perfect For =
+
+* Professional photographers showcasing portfolios
+* Photography studios managing client galleries
+* Creative agencies organizing project images
+* Personal photo collections
+* Event photography management
+* Travel bloggers documenting journeys
+
+= Shortcodes =
+
+Display your galleries anywhere with these shortcodes:
+
+* `[photovault_gallery]` - Display main gallery
+* `[photovault_album id="123"]` - Show specific album
+* `[photovault_upload]` - Frontend upload form
+* `[photovault_timeline]` - Timeline view of photos
+
+= Premium Support =
+
+Need help? We provide comprehensive documentation and support to ensure you get the most out of PhotoVault.
+
+== Installation ==
+
+= Automatic Installation =
+
+1. Log in to your WordPress admin panel
+2. Navigate to Plugins → Add New
+3. Search for "PhotoVault"
+4. Click "Install Now" and then "Activate"
+
+= Manual Installation =
+
+1. Download the plugin ZIP file
+2. Log in to your WordPress admin panel
+3. Navigate to Plugins → Add New → Upload Plugin
+4. Choose the downloaded ZIP file and click "Install Now"
+5. After installation, click "Activate Plugin"
+
+= First-Time Setup =
+
+1. After activation, go to PhotoVault in your WordPress admin menu
+2. Configure your settings under PhotoVault → Settings
+3. Set upload limits, thumbnail sizes, and watermark preferences
+4. Start uploading your first images!
+
+= System Requirements =
+
+* WordPress 5.0 or higher
+* PHP 7.4 or higher
+* MySQL 5.6 or higher (or MariaDB equivalent)
+* GD Library or ImageMagick for image processing
+* Recommended: 128MB PHP memory limit for large file uploads
+
+== Frequently Asked Questions ==
+
+= What image formats are supported? =
+
+PhotoVault supports JPEG, PNG, GIF, and WebP image formats by default. You can customize allowed formats in the plugin settings.
+
+= What is the maximum file size I can upload? =
+
+The plugin automatically handles large files using chunked upload technology. The maximum size depends on your server configuration, but PhotoVault can handle files well over 10MB by splitting them into smaller chunks.
+
+= Can I use PhotoVault for client galleries? =
+
+Absolutely! PhotoVault includes privacy features and sharing options perfect for creating client-specific galleries with password protection and access controls.
+
+= Does the plugin extract EXIF data? =
+
+Yes! PhotoVault automatically extracts EXIF metadata including camera model, lens information, GPS coordinates, exposure settings, and more. This data can be displayed with your images.
+
+= Can I customize the gallery appearance? =
+
+Yes! PhotoVault provides CSS classes and customization options. Advanced users can use the included hooks and filters to completely customize the display.
+
+= Is PhotoVault compatible with my theme? =
+
+PhotoVault is designed to work with any properly coded WordPress theme. The frontend templates are minimal and inherit your theme's styles.
+
+= Can I migrate from another gallery plugin? =
+
+While PhotoVault doesn't include automatic migration tools in version 1.0, you can manually import images and organize them into albums. Future versions may include migration utilities.
+
+= Does it work with page builders? =
+
+Yes! You can use PhotoVault shortcodes in any page builder including Elementor, WPBakery, Divi, and Gutenberg.
+
+= How do I add a watermark to my images? =
+
+Go to PhotoVault → Settings → Image Processing and enable watermarking. You can customize the watermark text, position, and opacity.
+
+= Can visitors upload images? =
+
+Yes! Use the `[photovault_upload]` shortcode to display a frontend upload form. You can control who can upload through WordPress user roles and capabilities.
+
+== Screenshots ==
+
+1. Main gallery view with grid layout
+2. Album management interface
+3. Image upload with drag-and-drop
+4. Timeline view of photos organized by date
+5. EXIF data display panel
+6. Settings page with customization options
+7. Frontend gallery display
+8. Lightbox image viewer
+9. Sharing and privacy controls
+10. Mobile responsive gallery view
+
+== Changelog ==
+
+= 1.0.0 - 2025-01-17 =
+* Initial release
+* Core gallery and album functionality
+* Advanced image upload with chunking
+* EXIF data extraction
+* Thumbnail generation
+* Watermarking support
+* Timeline view
+* Tag management
+* Sharing and privacy features
+* Frontend shortcodes
+* Admin dashboard
+* Settings panel
+* Security hardening
+* Performance optimization
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release of PhotoVault. Install and start managing your photo galleries professionally!
+
+== Privacy Policy ==
+
+PhotoVault does not collect, store, or transmit any user data to external servers. All images and data remain on your WordPress installation. If you enable EXIF extraction, location data from photos may be stored in your database - please inform your users if you display this information publicly.
+
+== Credits ==
+
+PhotoVault is developed and maintained by mahbubmr500.
+
+== Support ==
+
+For support, feature requests, or bug reports:
+* Visit the [support forum](https://wordpress.org/support/plugin/photovault/)
+* Check the [documentation](https://example.com/photovault-docs)
+* Submit issues on [GitHub](https://github.com/mahbubmr500/photovault)
+
+== Contributing ==
+
+PhotoVault is open source! Contributions are welcome:
+* GitHub Repository: https://github.com/mahbubmr500/photovault
+* Follow WordPress coding standards
+* Include tests for new features
+* Update documentation as needed
