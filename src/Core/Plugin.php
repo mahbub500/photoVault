@@ -1,11 +1,16 @@
 <?php
+namespace PhotoVault\Core;
 /**
  * Main Plugin Class
  *
  * @package PhotoVault
  */
 
-namespace PhotoVault\Core;
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 
 use PhotoVault\Admin\MenuManager;
 use PhotoVault\Admin\AssetManager;

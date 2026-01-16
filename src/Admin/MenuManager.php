@@ -4,10 +4,14 @@
  *
  * @package PhotoVault
  */
-
 namespace PhotoVault\Admin;
-
 use PhotoVault\Controllers\TagController;
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 
 class MenuManager {
     

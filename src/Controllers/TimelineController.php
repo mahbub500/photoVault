@@ -7,6 +7,11 @@
 
 namespace PhotoVault\Controllers;
 
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class TimelineController {
     
     /**

@@ -8,6 +8,11 @@ namespace PhotoVault\Controllers;
 
 use PhotoVault\Models\Tag;
 
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class TagController {
     
     private $tag_model;

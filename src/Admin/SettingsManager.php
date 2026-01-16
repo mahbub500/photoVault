@@ -4,10 +4,13 @@
  *
  * @package PhotoVault
  */
-
 namespace PhotoVault\Admin;
-
 use PhotoVault\Controllers\SettingsController;
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 class SettingsManager {
     

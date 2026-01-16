@@ -4,8 +4,12 @@
  *
  * @package PhotoVault
  */
-
 namespace PhotoVault\Admin;
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 class AssetManager {
     
