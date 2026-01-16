@@ -58,6 +58,7 @@ class Share {
     public function get_item_shares($item_type, $item_id) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         return $wpdb->get_results($wpdb->prepare(
             "SELECT s.*, u.display_name as shared_with_name
              FROM {$this->table} s
@@ -80,6 +81,7 @@ class Share {
     public function get_share($item_type, $item_id, $user_id) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         return $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM {$this->table}
              WHERE item_type = %s AND item_id = %d AND shared_with = %d",
@@ -113,6 +115,7 @@ class Share {
         
         $sql .= " ORDER BY s.shared_date DESC";
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table names use $wpdb->prefix, all user inputs properly prepared.
         return $wpdb->get_results($wpdb->prepare($sql, $params));
     }
     
@@ -140,6 +143,7 @@ class Share {
         
         $sql .= " ORDER BY s.shared_date DESC";
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table names use $wpdb->prefix, all user inputs properly prepared.
         return $wpdb->get_results($wpdb->prepare($sql, $params));
     }
     
@@ -204,8 +208,9 @@ class Share {
             ? $wpdb->prefix . 'pv_images' 
             : $wpdb->prefix . 'pv_albums';
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $owner = $wpdb->get_var($wpdb->prepare(
-            "SELECT user_id FROM $table WHERE id = %d",
+            "SELECT user_id FROM {$table} WHERE id = %d",
             $item_id
         ));
         
@@ -235,8 +240,9 @@ class Share {
             ? $wpdb->prefix . 'pv_images' 
             : $wpdb->prefix . 'pv_albums';
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $owner = $wpdb->get_var($wpdb->prepare(
-            "SELECT user_id FROM $table WHERE id = %d",
+            "SELECT user_id FROM {$table} WHERE id = %d",
             $item_id
         ));
         
@@ -259,22 +265,26 @@ class Share {
     public function get_user_stats($user_id) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $shared_by_me = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$this->table} WHERE shared_by = %d",
             $user_id
         ));
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $shared_with_me = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$this->table} WHERE shared_with = %d",
             $user_id
         ));
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $images_shared = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$this->table} 
              WHERE shared_by = %d AND item_type = 'image'",
             $user_id
         ));
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $albums_shared = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$this->table} 
              WHERE shared_by = %d AND item_type = 'album'",
