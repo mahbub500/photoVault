@@ -92,8 +92,10 @@ class Tag {
         }
         
         if (!empty($query_params)) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table names use $wpdb->prefix, all user inputs properly prepared.
             return $wpdb->get_results($wpdb->prepare($sql, $query_params));
         } else {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table names use $wpdb->prefix, no user inputs in query.
             return $wpdb->get_results($sql);
         }
     }
@@ -107,11 +109,13 @@ class Tag {
     public function get($tag_id) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $sql = "SELECT t.*, 
                 (SELECT COUNT(*) FROM {$wpdb->prefix}pv_image_tag WHERE tag_id = t.id) as usage_count
                 FROM {$this->table} t
                 WHERE t.id = %d";
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query properly prepared above.
         return $wpdb->get_row($wpdb->prepare($sql, $tag_id));
     }
     
@@ -124,11 +128,13 @@ class Tag {
     public function get_by_slug($slug) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $sql = "SELECT t.*, 
                 (SELECT COUNT(*) FROM {$wpdb->prefix}pv_image_tag WHERE tag_id = t.id) as usage_count
                 FROM {$this->table} t
                 WHERE t.slug = %s";
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query properly prepared above.
         return $wpdb->get_row($wpdb->prepare($sql, $slug));
     }
     
@@ -167,7 +173,7 @@ class Tag {
         $wpdb->delete($this->table, ['id' => $tag_id]);
         
         // Remove tag associations from images
-        $wpdb->delete("{$wpdb->prefix}pv_image_tag", ['tag_id' => $tag_id]);
+        $wpdb->delete($wpdb->prefix . 'pv_image_tag', ['tag_id' => $tag_id]);
         
         return true;
     }
@@ -189,6 +195,7 @@ class Tag {
         $slug = sanitize_title($name);
         
         // Try to get existing tag
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $tag_id = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$this->table} WHERE slug = %s",
             $slug
@@ -216,7 +223,7 @@ class Tag {
     public function add_to_image($image_id, $tag_id) {
         global $wpdb;
         
-        return $wpdb->replace("{$wpdb->prefix}pv_image_tag", [
+        return $wpdb->replace($wpdb->prefix . 'pv_image_tag', [
             'image_id' => $image_id,
             'tag_id' => $tag_id
         ]) !== false;
@@ -232,7 +239,7 @@ class Tag {
     public function remove_from_image($image_id, $tag_id) {
         global $wpdb;
         
-        return $wpdb->delete("{$wpdb->prefix}pv_image_tag", [
+        return $wpdb->delete($wpdb->prefix . 'pv_image_tag', [
             'image_id' => $image_id,
             'tag_id' => $tag_id
         ]) !== false;
@@ -247,6 +254,7 @@ class Tag {
     public function get_image_tags($image_id) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         return $wpdb->get_results($wpdb->prepare(
             "SELECT t.* FROM {$this->table} t
              INNER JOIN {$wpdb->prefix}pv_image_tag it ON t.id = it.tag_id
@@ -286,6 +294,7 @@ class Tag {
     public function get_popular($limit = 10) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         return $wpdb->get_results($wpdb->prepare(
             "SELECT t.*, COUNT(it.image_id) as usage_count
              FROM {$this->table} t
