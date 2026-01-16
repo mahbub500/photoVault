@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: PhotoVault - Advanced Gallery Manager
- * Plugin URI: https://yoursite.com/photovault
+ * Plugin Name: PhotoVault
+ * Plugin URI: https://wordpress.org/plugins/photovault
  * Description: A Google Photos-like gallery system with albums, tags, sharing, and timeline views
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Mahbub
- * Author URI: https://yoursite.com
+ * Author URI: mahbubmr500@gmail.com
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: photovault
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('PHOTOVAULT_VERSION', '1.0.0');
+define('PHOTOVAULT_VERSION', '1.0.1');
 define('PHOTOVAULT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PHOTOVAULT_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('PHOTOVAULT_PLUGIN_FILE', __FILE__);
