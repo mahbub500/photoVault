@@ -169,13 +169,24 @@ class MenuManager {
         
         $this->render_view('settings');
     }
+
+
     
     /**
      * Save settings
      */
     private function save_settings() {
-        // Nonce is already verified in render_settings_page() before calling this method
+        // Verify nonce
+        if (!isset($_POST['photovault_settings_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['photovault_settings_nonce'])), 'photovault_save_settings')) {
+            wp_die(esc_html__('Security check failed', 'photovault'));
+        }
         
+        // Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('Unauthorized', 'photovault'));
+        }
+        
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above
         $settings = [
             'photovault_max_upload_size' => isset($_POST['max_upload_size']) ? intval($_POST['max_upload_size']) : 10485760,
             'photovault_thumbnail_width' => isset($_POST['thumbnail_width']) ? intval($_POST['thumbnail_width']) : 300,
@@ -189,6 +200,7 @@ class MenuManager {
             'photovault_image_quality' => isset($_POST['image_quality']) ? intval($_POST['image_quality']) : 85,
             'photovault_auto_optimize' => isset($_POST['auto_optimize']),
         ];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         
         foreach ($settings as $key => $value) {
             update_option($key, $value);
@@ -201,8 +213,7 @@ class MenuManager {
             __('Settings saved successfully.', 'photovault'),
             'updated'
         );
-    }
-    
+    }    
     /**
      * Render view template
      *
