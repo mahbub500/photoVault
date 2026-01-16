@@ -39,6 +39,8 @@ class ImageController {
                 wp_send_json_error(['message' => __('No file uploaded', 'photovault')]);
             }
             
+            // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
+            
             // Handle chunked upload
             if (isset($_POST['chunk_index']) && isset($_POST['total_chunks'])) {
                 $this->handle_chunked_upload();
@@ -92,6 +94,8 @@ class ImageController {
                 $this->image_model->add_to_album($image_id, intval($_POST['album_id']));
             }
             
+            // phpcs:enable WordPress.Security.NonceVerification.Missing
+            
             wp_send_json_success([
                 'image_id' => $image_id,
                 'attachment_id' => $upload_result['attachment_id'],
@@ -110,6 +114,7 @@ class ImageController {
      */
     private function handle_chunked_upload() {
         // Nonce already verified in upload() method before calling this
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in parent upload() method
         
         $chunk_index = isset($_POST['chunk_index']) ? intval($_POST['chunk_index']) : 0;
         $total_chunks = isset($_POST['total_chunks']) ? intval($_POST['total_chunks']) : 0;
@@ -169,6 +174,8 @@ class ImageController {
                 $this->image_model->add_to_album($image_id, intval($_POST['album_id']));
             }
             
+            // phpcs:enable WordPress.Security.NonceVerification.Missing
+            
             wp_send_json_success([
                 'image_id' => $image_id,
                 'attachment_id' => $result['attachment_id'],
@@ -177,6 +184,8 @@ class ImageController {
                 'complete' => true
             ]);
         } else {
+            // phpcs:enable WordPress.Security.NonceVerification.Missing
+            
             // Chunk received, waiting for more
             wp_send_json_success([
                 'chunk' => $chunk_index,
@@ -192,6 +201,7 @@ class ImageController {
     public function get_images() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $params = [
             'user_id' => get_current_user_id(),
             'album_id' => isset($_POST['album_id']) ? intval($_POST['album_id']) : 0,
@@ -202,6 +212,7 @@ class ImageController {
             'sort' => isset($_POST['sort']) ? sanitize_text_field(wp_unslash($_POST['sort'])) : 'date_desc',
             'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : '',
         ];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         
         $result = $this->image_model->get_images($params);
         
@@ -214,7 +225,9 @@ class ImageController {
     public function get_image() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         
         if (!$image_id) {
             wp_send_json_error(['message' => __('Invalid image ID', 'photovault')]);
@@ -243,6 +256,7 @@ class ImageController {
     public function update() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
         $user_id = get_current_user_id();
         
@@ -260,6 +274,7 @@ class ImageController {
             'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
             'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : 'private',
         ];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         
         $updated = $this->image_model->update($image_id, $data);
         
@@ -276,7 +291,9 @@ class ImageController {
     public function delete() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $user_id = get_current_user_id();
         
         if (!$image_id) {
@@ -303,10 +320,12 @@ class ImageController {
     public function bulk_delete() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_ids = [];
         if (isset($_POST['image_ids']) && is_array($_POST['image_ids'])) {
             $image_ids = array_map('intval', wp_unslash($_POST['image_ids']));
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         
         $user_id = get_current_user_id();
         
@@ -324,8 +343,7 @@ class ImageController {
             }
         }
         
-        // Translators: %1$d is the number of images deleted.
-       wp_send_json_success([
+        wp_send_json_success([
             'message'       => sprintf(
                 // translators: %1$d is the number of images deleted.
                 __('%1$d images deleted successfully', 'photovault'),
@@ -333,7 +351,6 @@ class ImageController {
             ),
             'deleted_count' => $deleted_count,
         ]);
-
     }
     
     /**
@@ -342,12 +359,14 @@ class ImageController {
     public function add_to_album() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_ids = [];
         if (isset($_POST['image_ids']) && is_array($_POST['image_ids'])) {
             $image_ids = array_map('intval', wp_unslash($_POST['image_ids']));
         }
         
         $album_id = isset($_POST['album_id']) ? intval($_POST['album_id']) : 0;
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         
         if (empty($image_ids) || !$album_id) {
             wp_send_json_error(['message' => __('Invalid parameters', 'photovault')]);
@@ -361,7 +380,6 @@ class ImageController {
             }
         }
         
-        // Translators: %1$d is the number of images added to the album.
         wp_send_json_success([
             'message'      => sprintf(
                 // translators: %1$d is the number of images added to the album.
@@ -370,6 +388,5 @@ class ImageController {
             ),
             'added_count'  => $added_count,
         ]);
-
     }
 }
