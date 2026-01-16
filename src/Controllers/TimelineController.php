@@ -17,8 +17,8 @@ class TimelineController {
         
         global $wpdb;
         
-        $view = sanitize_text_field($_POST['view'] ?? 'day');
-        $sort = sanitize_text_field($_POST['sort'] ?? 'desc');
+        $view = isset($_POST['view']) ? sanitize_text_field(wp_unslash($_POST['view'])) : 'day';
+        $sort = isset($_POST['sort']) ? sanitize_text_field(wp_unslash($_POST['sort'])) : 'desc';
         $user_id = get_current_user_id();
         
         // Determine grouping format based on view
@@ -35,6 +35,9 @@ class TimelineController {
                 break;
         }
         
+        // Validate and sanitize sort order
+        $order = ($sort === 'asc') ? 'ASC' : 'DESC';
+        
         // Get all images for the current user
         $query = $wpdb->prepare(
             "SELECT 
@@ -48,11 +51,12 @@ class TimelineController {
             FROM {$wpdb->prefix}pv_images i
             LEFT JOIN {$wpdb->users} u ON i.user_id = u.ID
             WHERE i.user_id = %d
-            ORDER BY i.upload_date " . ($sort === 'asc' ? 'ASC' : 'DESC'),
+            ORDER BY i.upload_date {$order}",
             $date_format,
             $user_id
         );
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query properly prepared above with validated ORDER BY.
         $images = $wpdb->get_results($query);
         
         if (empty($images)) {
@@ -168,8 +172,8 @@ class TimelineController {
         
         global $wpdb;
         
-        $start_date = sanitize_text_field($_POST['start_date'] ?? '');
-        $end_date = sanitize_text_field($_POST['end_date'] ?? '');
+        $start_date = isset($_POST['start_date']) ? sanitize_text_field(wp_unslash($_POST['start_date'])) : '';
+        $end_date = isset($_POST['end_date']) ? sanitize_text_field(wp_unslash($_POST['end_date'])) : '';
         $user_id = get_current_user_id();
         
         if (empty($start_date) || empty($end_date)) {
