@@ -106,7 +106,7 @@ if (!defined('ABSPATH')) {
             <!-- Load More -->
             <div class="pv-load-more">
                 <button class="button button-primary" id="pv-load-more-btn">
-                    <?php esc_html_e('Load More', 'photovault'); ?>
+                    Load More
                 </button>
             </div>
         </div>

@@ -79,11 +79,11 @@ class Plugin {
      */
     private function load_textdomain() {
         // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomain -- Manual loading for custom distribution outside WordPress.org.
-        load_plugin_textdomain(
-            'photovault',
-            false,
-            dirname(plugin_basename(PHOTOVAULT_PLUGIN_FILE)) . '/languages'
-        );
+        // load_plugin_textdomain(
+        //     'photovault',
+        //     false,
+        //     dirname(plugin_basename(PHOTOVAULT_PLUGIN_FILE)) . '/languages'
+        // );
     }
     
     /**

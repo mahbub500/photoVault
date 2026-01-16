@@ -121,3 +121,18 @@
     object-fit: cover;
     border-radius: 4px;
 }
+.pv-images-end {
+    text-align: center;
+    padding: 30px 20px;
+    color: #666;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pv-images-end .dashicons {
+    color: #46b450;
+    font-size: 20px;
+}

@@ -202,6 +202,7 @@
         renderImages: function() {
             const $grid = $('#pv-images-grid');
             
+            // Only clear grid on first page load
             if (this.currentPage === 1) {
                 $grid.empty();
             }
@@ -210,22 +211,27 @@
                 $grid.html(`
                     <div class="pv-no-images">
                         <span class="dashicons dashicons-format-image" style="font-size: 64px; opacity: 0.3;"></span>
-                        <p>${photoVault.i18n?.noImages || 'No images found'}</p>
-                        <button class="button button-primary" id="pv-upload-btn-empty">
-                            ${photoVault.i18n?.uploadFirst || 'Upload Your First Image'}
+                        <p style="color: #666; font-size: 16px;">No images found. Start by uploading your first image!</p>
+                        <button class="button button-primary" id="pv-upload-btn-empty" style="margin-top: 15px;">
+                            Upload Images
                         </button>
                     </div>
                 `);
                 return;
             }
 
-            this.images.forEach((image, index) => {
+            // Calculate which images to render (only new ones on subsequent pages)
+            const startIndex = (this.currentPage - 1) * this.perPage;
+            const imagesToRender = this.images.slice(startIndex);
+
+            imagesToRender.forEach((image, relativeIndex) => {
+                const absoluteIndex = startIndex + relativeIndex;
                 const thumbnail = image.thumbnail || image.url || '';
                 const title = this.escapeHtml(image.title || 'Untitled');
                 const date = image.upload_date ? new Date(image.upload_date).toLocaleDateString() : '';
 
                 const $card = $(`
-                    <div class="pv-image-card" data-id="${image.id}" data-index="${index}">
+                    <div class="pv-image-card" data-id="${image.id}" data-index="${absoluteIndex}">
                         <div class="pv-image-checkbox-wrapper">
                             <input type="checkbox" class="pv-image-checkbox" value="${image.id}">
                         </div>
@@ -242,10 +248,12 @@
                 $grid.append($card);
             });
 
-            // Bind click for empty state button
-            $('#pv-upload-btn-empty').on('click', function() {
-                $('#pv-upload-btn').trigger('click');
-            });
+            // Bind click for empty state button (only if page 1)
+            if (this.currentPage === 1) {
+                $('#pv-upload-btn-empty').on('click', function() {
+                    $('#pv-upload-btn').trigger('click');
+                });
+            }
         },
 
         loadMore: function() {
