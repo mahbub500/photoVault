@@ -14,14 +14,14 @@ settings_fields('photovault_watermark');
 ?>
 
 <div class="photovault-settings-section">
-    <h2><?php _e('Watermark Settings', 'photovault'); ?></h2>
+    <h2><?php esc_html_e('Watermark Settings', 'photovault'); ?></h2>
     
     <table class="form-table photovault-form-table">
         <tbody>
             <!-- Enable Watermark -->
             <tr>
                 <th scope="row">
-                    <?php _e('Enable Watermark', 'photovault'); ?>
+                    <?php esc_html_e('Enable Watermark', 'photovault'); ?>
                 </th>
                 <td>
                     <label for="photovault_enable_watermark">
@@ -30,10 +30,10 @@ settings_fields('photovault_watermark');
                                name="photovault_enable_watermark" 
                                value="1" 
                                <?php checked($data['watermark']['enable_watermark'], true); ?>>
-                        <?php _e('Add watermark to images', 'photovault'); ?>
+                        <?php esc_html_e('Add watermark to images', 'photovault'); ?>
                     </label>
                     <p class="description">
-                        <?php _e('Protect your images by adding a watermark', 'photovault'); ?>
+                        <?php esc_html_e('Protect your images by adding a watermark', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -42,7 +42,7 @@ settings_fields('photovault_watermark');
             <tr>
                 <th scope="row">
                     <label for="photovault_watermark_text">
-                        <?php _e('Watermark Text', 'photovault'); ?>
+                        <?php esc_html_e('Watermark Text', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -52,7 +52,7 @@ settings_fields('photovault_watermark');
                            value="<?php echo esc_attr($data['watermark']['watermark_text']); ?>" 
                            class="regular-text">
                     <p class="description">
-                        <?php _e('Text to display as watermark', 'photovault'); ?>
+                        <?php esc_html_e('Text to display as watermark', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -61,7 +61,7 @@ settings_fields('photovault_watermark');
             <tr>
                 <th scope="row">
                     <label for="photovault_watermark_position">
-                        <?php _e('Watermark Position', 'photovault'); ?>
+                        <?php esc_html_e('Watermark Position', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -74,7 +74,7 @@ settings_fields('photovault_watermark');
                         <?php endforeach; ?>
                     </select>
                     <p class="description">
-                        <?php _e('Where to place the watermark on images', 'photovault'); ?>
+                        <?php esc_html_e('Where to place the watermark on images', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -83,7 +83,7 @@ settings_fields('photovault_watermark');
             <tr>
                 <th scope="row">
                     <label for="photovault_watermark_opacity">
-                        <?php _e('Watermark Opacity', 'photovault'); ?>
+                        <?php esc_html_e('Watermark Opacity', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -98,10 +98,10 @@ settings_fields('photovault_watermark');
                                data-output="opacity-value">
                         <output id="opacity-value" class="photovault-range-output">
                             <?php echo esc_html($data['watermark']['watermark_opacity']); ?>%
-                        </o>
+                        </output>
                     </div>
                     <p class="description">
-                        <?php _e('Transparency of the watermark (0 = transparent, 100 = opaque)', 'photovault'); ?>
+                        <?php esc_html_e('Transparency of the watermark (0 = transparent, 100 = opaque)', 'photovault'); ?>
                     </p>
                 </td>
             </tr>

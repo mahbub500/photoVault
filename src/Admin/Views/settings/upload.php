@@ -14,7 +14,7 @@ settings_fields('photovault_upload');
 ?>
 
 <div class="photovault-settings-section">
-    <h2><?php _e('Upload Settings', 'photovault'); ?></h2>
+    <h2><?php esc_html_e('Upload Settings', 'photovault'); ?></h2>
     
     <table class="form-table photovault-form-table">
         <tbody>
@@ -22,7 +22,7 @@ settings_fields('photovault_upload');
             <tr>
                 <th scope="row">
                     <label for="photovault_max_upload_size">
-                        <?php _e('Maximum Upload Size', 'photovault'); ?>
+                        <?php esc_html_e('Maximum Upload Size', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -36,25 +36,29 @@ settings_fields('photovault_upload');
                     <p class="description">
                         <?php 
                         $mb = $data['upload']['max_upload_size'] / 1048576;
+
+                        // Translators: %1$s = current upload size in MB, %2$s = server maximum upload size formatted (e.g., "8 MB").
                         printf(
-                            __('Current: %s MB (in bytes). Server maximum: %s', 'photovault'), 
+                            /* translators: %1$s = current upload size in MB, %2$s = server max upload size */
+                            esc_html__('Current: %1$s MB (in bytes). Server maximum: %2$s', 'photovault'),
                             number_format($mb, 2),
-                            size_format($data['upload']['server_max'])
+                            esc_html(size_format($data['upload']['server_max']))
                         ); 
                         ?>
                     </p>
                 </td>
+
             </tr>
             
             <!-- Allowed File Types -->
             <tr>
                 <th scope="row">
-                    <?php _e('Allowed File Types', 'photovault'); ?>
+                    <?php esc_html_e('Allowed File Types', 'photovault'); ?>
                 </th>
                 <td>
                     <fieldset class="photovault-checkbox-group">
                         <legend class="screen-reader-text">
-                            <span><?php _e('Allowed File Types', 'photovault'); ?></span>
+                            <span><?php esc_html_e('Allowed File Types', 'photovault'); ?></span>
                         </legend>
                         
                         <?php foreach ($data['file_types'] as $ext => $label) : ?>
@@ -68,7 +72,7 @@ settings_fields('photovault_upload');
                         <?php endforeach; ?>
                         
                         <p class="description">
-                            <?php _e('Select which image formats users can upload', 'photovault'); ?>
+                            <?php esc_html_e('Select which image formats users can upload', 'photovault'); ?>
                         </p>
                     </fieldset>
                 </td>

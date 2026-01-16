@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 <div class="wrap photovault-wrap">
     <div class="pv-timeline-header">
-        <h1><?php _e('Timeline', 'photovault'); ?></h1>
+        <h1><?php esc_html_e('Timeline', 'photovault'); ?></h1>
         
         <!-- Statistics Cards -->
         <div class="pv-timeline-stats" id="pv-timeline-stats">
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
                 </div>
                 <div class="pv-stat-info">
                     <div class="pv-stat-value" id="pv-stat-total">-</div>
-                    <div class="pv-stat-label"><?php _e('Total Images', 'photovault'); ?></div>
+                    <div class="pv-stat-label"><?php esc_html_e('Total Images', 'photovault'); ?></div>
                 </div>
             </div>
             
@@ -32,7 +32,7 @@ if (!defined('ABSPATH')) {
                 </div>
                 <div class="pv-stat-info">
                     <div class="pv-stat-value" id="pv-stat-months">-</div>
-                    <div class="pv-stat-label"><?php _e('Active Months', 'photovault'); ?></div>
+                    <div class="pv-stat-label"><?php esc_html_e('Active Months', 'photovault'); ?></div>
                 </div>
             </div>
             
@@ -42,7 +42,7 @@ if (!defined('ABSPATH')) {
                 </div>
                 <div class="pv-stat-info">
                     <div class="pv-stat-value" id="pv-stat-recent">-</div>
-                    <div class="pv-stat-label"><?php _e('This Month', 'photovault'); ?></div>
+                    <div class="pv-stat-label"><?php esc_html_e('This Month', 'photovault'); ?></div>
                 </div>
             </div>
         </div>
@@ -50,25 +50,25 @@ if (!defined('ABSPATH')) {
 
     <div class="pv-timeline-filters">
         <div class="pv-filter-group">
-            <label for="pv-timeline-view"><?php _e('Group by:', 'photovault'); ?></label>
+            <label for="pv-timeline-view"><?php esc_html_e('Group by:', 'photovault'); ?></label>
             <select id="pv-timeline-view">
-                <option value="day"><?php _e('By Day', 'photovault'); ?></option>
-                <option value="month"><?php _e('By Month', 'photovault'); ?></option>
-                <option value="year"><?php _e('By Year', 'photovault'); ?></option>
+                <option value="day"><?php esc_html_e('By Day', 'photovault'); ?></option>
+                <option value="month"><?php esc_html_e('By Month', 'photovault'); ?></option>
+                <option value="year"><?php esc_html_e('By Year', 'photovault'); ?></option>
             </select>
         </div>
         
         <div class="pv-filter-group">
-            <label for="pv-timeline-sort"><?php _e('Sort:', 'photovault'); ?></label>
+            <label for="pv-timeline-sort"><?php esc_html_e('Sort:', 'photovault'); ?></label>
             <select id="pv-timeline-sort">
-                <option value="desc"><?php _e('Newest First', 'photovault'); ?></option>
-                <option value="asc"><?php _e('Oldest First', 'photovault'); ?></option>
+                <option value="desc"><?php esc_html_e('Newest First', 'photovault'); ?></option>
+                <option value="asc"><?php esc_html_e('Oldest First', 'photovault'); ?></option>
             </select>
         </div>
         
         <button class="button" id="pv-refresh-timeline">
             <span class="dashicons dashicons-update"></span>
-            <?php _e('Refresh', 'photovault'); ?>
+            <?php esc_html_e('Refresh', 'photovault'); ?>
         </button>
     </div>
 
@@ -78,7 +78,7 @@ if (!defined('ABSPATH')) {
         <!-- Loading Indicator -->
         <div id="pv-timeline-loading" class="pv-loading">
             <span class="spinner is-active"></span>
-            <p><?php _e('Loading timeline...', 'photovault'); ?></p>
+            <p><?php esc_html_e('Loading timeline...', 'photovault'); ?></p>
         </div>
     </div>
 </div>
@@ -134,7 +134,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'pv_get_timeline_stats',
-                    nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>'
+                    nonce: '<?php echo esc_js(wp_create_nonce('photovault_nonce')); ?>'
                 },
                 success: (response) => {
                     if (response.success && response.data) {
@@ -166,7 +166,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'pv_get_timeline_images',
-                    nonce: '<?php echo wp_create_nonce('photovault_nonce'); ?>',
+                    nonce: '<?php echo esc_js(wp_create_nonce('photovault_nonce')); ?>',
                     view: view,
                     sort: sort
                 },
@@ -220,7 +220,7 @@ jQuery(document).ready(function($) {
                     <div class="pv-timeline-date-header">
                         <h2>
                             ${displayDate}
-                            <span class="pv-timeline-count">${totalCount} ${totalCount === 1 ? '<?php _e('image', 'photovault'); ?>' : '<?php _e('images', 'photovault'); ?>'}</span>
+                            <span class="pv-timeline-count">${totalCount} ${totalCount === 1 ? '<?php echo esc_js(esc_html__('image', 'photovault')); ?>' : '<?php echo esc_js(esc_html__('images', 'photovault')); ?>'}</span>
                         </h2>
                         <span class="dashicons dashicons-arrow-down-alt2 pv-toggle-icon"></span>
                     </div>
@@ -252,7 +252,7 @@ jQuery(document).ready(function($) {
                         <span class="pv-timeline-image-date">${date}</span>
                     </div>
                     <div class="pv-image-actions">
-                        <button class="pv-btn-icon pv-view-image" title="<?php _e('View', 'photovault'); ?>">
+                        <button class="pv-btn-icon pv-view-image" title="<?php echo esc_attr__('View', 'photovault'); ?>">
                             <span class="dashicons dashicons-visibility"></span>
                         </button>
                     </div>
@@ -262,19 +262,19 @@ jQuery(document).ready(function($) {
 
         formatDateKey: function(key, view) {
             const monthNames = [
-                '<?php _e('January', 'photovault'); ?>', '<?php _e('February', 'photovault'); ?>', 
-                '<?php _e('March', 'photovault'); ?>', '<?php _e('April', 'photovault'); ?>', 
-                '<?php _e('May', 'photovault'); ?>', '<?php _e('June', 'photovault'); ?>', 
-                '<?php _e('July', 'photovault'); ?>', '<?php _e('August', 'photovault'); ?>', 
-                '<?php _e('September', 'photovault'); ?>', '<?php _e('October', 'photovault'); ?>', 
-                '<?php _e('November', 'photovault'); ?>', '<?php _e('December', 'photovault'); ?>'
+                '<?php echo esc_js(esc_html__('January', 'photovault')); ?>', '<?php echo esc_js(esc_html__('February', 'photovault')); ?>', 
+                '<?php echo esc_js(esc_html__('March', 'photovault')); ?>', '<?php echo esc_js(esc_html__('April', 'photovault')); ?>', 
+                '<?php echo esc_js(esc_html__('May', 'photovault')); ?>', '<?php echo esc_js(esc_html__('June', 'photovault')); ?>', 
+                '<?php echo esc_js(esc_html__('July', 'photovault')); ?>', '<?php echo esc_js(esc_html__('August', 'photovault')); ?>', 
+                '<?php echo esc_js(esc_html__('September', 'photovault')); ?>', '<?php echo esc_js(esc_html__('October', 'photovault')); ?>', 
+                '<?php echo esc_js(esc_html__('November', 'photovault')); ?>', '<?php echo esc_js(esc_html__('December', 'photovault')); ?>'
             ];
             
             const dayNames = [
-                '<?php _e('Sunday', 'photovault'); ?>', '<?php _e('Monday', 'photovault'); ?>',
-                '<?php _e('Tuesday', 'photovault'); ?>', '<?php _e('Wednesday', 'photovault'); ?>',
-                '<?php _e('Thursday', 'photovault'); ?>', '<?php _e('Friday', 'photovault'); ?>',
-                '<?php _e('Saturday', 'photovault'); ?>'
+                '<?php echo esc_js(esc_html__('Sunday', 'photovault')); ?>', '<?php echo esc_js(esc_html__('Monday', 'photovault')); ?>',
+                '<?php echo esc_js(esc_html__('Tuesday', 'photovault')); ?>', '<?php echo esc_js(esc_html__('Wednesday', 'photovault')); ?>',
+                '<?php echo esc_js(esc_html__('Thursday', 'photovault')); ?>', '<?php echo esc_js(esc_html__('Friday', 'photovault')); ?>',
+                '<?php echo esc_js(esc_html__('Saturday', 'photovault')); ?>'
             ];
             
             switch(view) {
@@ -316,10 +316,10 @@ jQuery(document).ready(function($) {
                             <div class="pv-modal-header">
                                 <h3>${title}</h3>
                                 <div class="pv-modal-actions">
-                                    <button class="pv-modal-action-btn" title="<?php _e('Download', 'photovault'); ?>">
+                                    <button class="pv-modal-action-btn" title="<?php echo esc_attr__('Download', 'photovault'); ?>">
                                         <span class="dashicons dashicons-download"></span>
                                     </button>
-                                    <a href="${fullUrl}" target="_blank" class="pv-modal-action-btn" title="<?php _e('Open in new tab', 'photovault'); ?>">
+                                    <a href="${fullUrl}" target="_blank" class="pv-modal-action-btn" title="<?php echo esc_attr__('Open in new tab', 'photovault'); ?>">
                                         <span class="dashicons dashicons-external"></span>
                                     </a>
                                 </div>
@@ -330,7 +330,7 @@ jQuery(document).ready(function($) {
                             </p>
                             <p class="pv-modal-id">
                                 <span class="dashicons dashicons-info"></span>
-                                <?php _e('Image ID:', 'photovault'); ?> ${imageId}
+                                <?php echo esc_html__('Image ID:', 'photovault'); ?> ${imageId}
                             </p>
                         </div>
                     </div>
@@ -383,8 +383,8 @@ jQuery(document).ready(function($) {
             return `
                 <div class="pv-no-timeline">
                     <span class="dashicons dashicons-images-alt2"></span>
-                    <h3><?php _e('No Images Yet', 'photovault'); ?></h3>
-                    <p><?php _e('Upload some images to see them in your timeline.', 'photovault'); ?></p>
+                    <h3><?php echo esc_html__('No Images Yet', 'photovault'); ?></h3>
+                    <p><?php echo esc_html__('Upload some images to see them in your timeline.', 'photovault'); ?></p>
                 </div>
             `;
         },
@@ -393,8 +393,8 @@ jQuery(document).ready(function($) {
             return `
                 <div class="pv-error-timeline">
                     <span class="dashicons dashicons-warning"></span>
-                    <h3><?php _e('Error Loading Timeline', 'photovault'); ?></h3>
-                    <p><?php _e('Please try refreshing the page.', 'photovault'); ?></p>
+                    <h3><?php echo esc_html__('Error Loading Timeline', 'photovault'); ?></h3>
+                    <p><?php echo esc_html__('Please try refreshing the page.', 'photovault'); ?></p>
                 </div>
             `;
         },

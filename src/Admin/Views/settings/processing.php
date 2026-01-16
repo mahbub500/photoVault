@@ -14,7 +14,7 @@ settings_fields('photovault_processing');
 ?>
 
 <div class="photovault-settings-section">
-    <h2><?php _e('Image Processing Settings', 'photovault'); ?></h2>
+    <h2><?php esc_html_e('Image Processing Settings', 'photovault'); ?></h2>
     
     <table class="form-table photovault-form-table">
         <tbody>
@@ -22,7 +22,7 @@ settings_fields('photovault_processing');
             <tr>
                 <th scope="row">
                     <label for="photovault_image_quality">
-                        <?php _e('Image Quality', 'photovault'); ?>
+                        <?php esc_html_e('Image Quality', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -40,7 +40,7 @@ settings_fields('photovault_processing');
                         </output>
                     </div>
                     <p class="description">
-                        <?php _e('Quality for processed images (1-100, higher is better quality but larger file size)', 'photovault'); ?>
+                        <?php esc_html_e('Quality for processed images (1-100, higher is better quality but larger file size)', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -48,7 +48,7 @@ settings_fields('photovault_processing');
             <!-- Auto Optimization -->
             <tr>
                 <th scope="row">
-                    <?php _e('Auto Optimization', 'photovault'); ?>
+                    <?php esc_html_e('Auto Optimization', 'photovault'); ?>
                 </th>
                 <td>
                     <label for="photovault_auto_optimize">
@@ -57,10 +57,10 @@ settings_fields('photovault_processing');
                                name="photovault_auto_optimize" 
                                value="1" 
                                <?php checked($data['processing']['auto_optimize'], true); ?>>
-                        <?php _e('Automatically optimize images on upload', 'photovault'); ?>
+                        <?php esc_html_e('Automatically optimize images on upload', 'photovault'); ?>
                     </label>
                     <p class="description">
-                        <?php _e('Reduces file size while maintaining quality', 'photovault'); ?>
+                        <?php esc_html_e('Reduces file size while maintaining quality', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -68,12 +68,12 @@ settings_fields('photovault_processing');
             <!-- Thumbnail Size -->
             <tr>
                 <th scope="row">
-                    <?php _e('Thumbnail Size', 'photovault'); ?>
+                    <?php esc_html_e('Thumbnail Size', 'photovault'); ?>
                 </th>
                 <td>
                     <div class="photovault-input-group">
                         <label for="photovault_thumbnail_width">
-                            <?php _e('Width:', 'photovault'); ?>
+                            <?php esc_html_e('Width:', 'photovault'); ?>
                             <input type="number" 
                                    id="photovault_thumbnail_width"
                                    name="photovault_thumbnail_width" 
@@ -87,7 +87,7 @@ settings_fields('photovault_processing');
                     
                     <div class="photovault-input-group">
                         <label for="photovault_thumbnail_height">
-                            <?php _e('Height:', 'photovault'); ?>
+                            <?php esc_html_e('Height:', 'photovault'); ?>
                             <input type="number" 
                                    id="photovault_thumbnail_height"
                                    name="photovault_thumbnail_height" 
@@ -100,7 +100,7 @@ settings_fields('photovault_processing');
                     </div>
                     
                     <p class="description">
-                        <?php _e('Dimensions for thumbnail images', 'photovault'); ?>
+                        <?php esc_html_e('Dimensions for thumbnail images', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -109,7 +109,7 @@ settings_fields('photovault_processing');
             <tr>
                 <th scope="row">
                     <label for="photovault_thumbnail_quality">
-                        <?php _e('Thumbnail Quality', 'photovault'); ?>
+                        <?php esc_html_e('Thumbnail Quality', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -127,7 +127,7 @@ settings_fields('photovault_processing');
                         </output>
                     </div>
                     <p class="description">
-                        <?php _e('Quality for thumbnail images', 'photovault'); ?>
+                        <?php esc_html_e('Quality for thumbnail images', 'photovault'); ?>
                     </p>
                 </td>
             </tr>

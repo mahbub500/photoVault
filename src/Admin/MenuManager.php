@@ -174,17 +174,19 @@ class MenuManager {
      * Save settings
      */
     private function save_settings() {
+        // Nonce is already verified in render_settings_page() before calling this method
+        
         $settings = [
-            'photovault_max_upload_size' => intval($_POST['max_upload_size'] ?? 10485760),
-            'photovault_thumbnail_width' => intval($_POST['thumbnail_width'] ?? 300),
-            'photovault_thumbnail_height' => intval($_POST['thumbnail_height'] ?? 300),
-            'photovault_thumbnail_quality' => intval($_POST['thumbnail_quality'] ?? 85),
+            'photovault_max_upload_size' => isset($_POST['max_upload_size']) ? intval($_POST['max_upload_size']) : 10485760,
+            'photovault_thumbnail_width' => isset($_POST['thumbnail_width']) ? intval($_POST['thumbnail_width']) : 300,
+            'photovault_thumbnail_height' => isset($_POST['thumbnail_height']) ? intval($_POST['thumbnail_height']) : 300,
+            'photovault_thumbnail_quality' => isset($_POST['thumbnail_quality']) ? intval($_POST['thumbnail_quality']) : 85,
             'photovault_enable_watermark' => isset($_POST['enable_watermark']),
-            'photovault_watermark_text' => sanitize_text_field($_POST['watermark_text'] ?? ''),
-            'photovault_default_visibility' => sanitize_text_field($_POST['default_visibility'] ?? 'private'),
+            'photovault_watermark_text' => isset($_POST['watermark_text']) ? sanitize_text_field(wp_unslash($_POST['watermark_text'])) : '',
+            'photovault_default_visibility' => isset($_POST['default_visibility']) ? sanitize_text_field(wp_unslash($_POST['default_visibility'])) : 'private',
             'photovault_enable_exif' => isset($_POST['enable_exif']),
-            'photovault_items_per_page' => intval($_POST['items_per_page'] ?? 20),
-            'photovault_image_quality' => intval($_POST['image_quality'] ?? 85),
+            'photovault_items_per_page' => isset($_POST['items_per_page']) ? intval($_POST['items_per_page']) : 20,
+            'photovault_image_quality' => isset($_POST['image_quality']) ? intval($_POST['image_quality']) : 85,
             'photovault_auto_optimize' => isset($_POST['auto_optimize']),
         ];
         
@@ -214,13 +216,17 @@ class MenuManager {
         } else {
             echo '<div class="wrap">';
             echo '<h1>' . esc_html__('View not found', 'photovault') . '</h1>';
+
+            // Translators: %1$s is the missing view filename wrapped in HTML <code> tags.
             echo '<p>' . sprintf(
-                esc_html__('The view file %s does not exist.', 'photovault'),
+                esc_html__('The view file %1$s does not exist.', 'photovault'),
                 '<code>' . esc_html($view) . '.php</code>'
             ) . '</p>';
+
             echo '</div>';
         }
     }
+
     
     /**
      * Get current menu page
@@ -228,7 +234,8 @@ class MenuManager {
      * @return string Current page slug
      */
     public function get_current_page() {
-        return isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading GET parameter for page identification only, not processing form data
+        return isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
     }
     
     /**

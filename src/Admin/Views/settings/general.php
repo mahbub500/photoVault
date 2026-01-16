@@ -14,7 +14,7 @@ settings_fields('photovault_general');
 ?>
 
 <div class="photovault-settings-section">
-    <h2><?php _e('General Settings', 'photovault'); ?></h2>
+    <h2><?php esc_html_e('General Settings', 'photovault'); ?></h2>
     
     <table class="form-table photovault-form-table">
         <tbody>
@@ -22,7 +22,7 @@ settings_fields('photovault_general');
             <tr>
                 <th scope="row">
                     <label for="photovault_items_per_page">
-                        <?php _e('Items Per Page', 'photovault'); ?>
+                        <?php esc_html_e('Items Per Page', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -34,7 +34,7 @@ settings_fields('photovault_general');
                            max="100" 
                            class="small-text">
                     <p class="description">
-                        <?php _e('Number of images to display per page in galleries', 'photovault'); ?>
+                        <?php esc_html_e('Number of images to display per page in galleries', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -43,7 +43,7 @@ settings_fields('photovault_general');
             <tr>
                 <th scope="row">
                     <label for="photovault_default_visibility">
-                        <?php _e('Default Visibility', 'photovault'); ?>
+                        <?php esc_html_e('Default Visibility', 'photovault'); ?>
                     </label>
                 </th>
                 <td>
@@ -56,7 +56,7 @@ settings_fields('photovault_general');
                         <?php endforeach; ?>
                     </select>
                     <p class="description">
-                        <?php _e('Default visibility for newly uploaded images', 'photovault'); ?>
+                        <?php esc_html_e('Default visibility for newly uploaded images', 'photovault'); ?>
                     </p>
                 </td>
             </tr>
@@ -64,12 +64,12 @@ settings_fields('photovault_general');
             <!-- Features -->
             <tr>
                 <th scope="row">
-                    <?php _e('Features', 'photovault'); ?>
+                    <?php esc_html_e('Features', 'photovault'); ?>
                 </th>
                 <td>
                     <fieldset>
                         <legend class="screen-reader-text">
-                            <span><?php _e('Features', 'photovault'); ?></span>
+                            <span><?php esc_html_e('Features', 'photovault'); ?></span>
                         </legend>
                         
                         <label for="photovault_enable_exif">
@@ -78,10 +78,10 @@ settings_fields('photovault_general');
                                    name="photovault_enable_exif" 
                                    value="1" 
                                    <?php checked($data['general']['enable_exif'], true); ?>>
-                            <?php _e('Enable EXIF data extraction', 'photovault'); ?>
+                            <?php esc_html_e('Enable EXIF data extraction', 'photovault'); ?>
                         </label>
                         <p class="description">
-                            <?php _e('Extract and display camera information from uploaded images', 'photovault'); ?>
+                            <?php esc_html_e('Extract and display camera information from uploaded images', 'photovault'); ?>
                         </p>
                         
                         <br>
@@ -92,10 +92,10 @@ settings_fields('photovault_general');
                                    name="photovault_enable_comments" 
                                    value="1" 
                                    <?php checked($data['general']['enable_comments'], true); ?>>
-                            <?php _e('Enable comments on images', 'photovault'); ?>
+                            <?php esc_html_e('Enable comments on images', 'photovault'); ?>
                         </label>
                         <p class="description">
-                            <?php _e('Allow users to comment on images', 'photovault'); ?>
+                            <?php esc_html_e('Allow users to comment on images', 'photovault'); ?>
                         </p>
                         
                         <br>
@@ -106,10 +106,10 @@ settings_fields('photovault_general');
                                    name="photovault_enable_likes" 
                                    value="1" 
                                    <?php checked($data['general']['enable_likes'], true); ?>>
-                            <?php _e('Enable likes/favorites', 'photovault'); ?>
+                            <?php esc_html_e('Enable likes/favorites', 'photovault'); ?>
                         </label>
                         <p class="description">
-                            <?php _e('Allow users to like and favorite images', 'photovault'); ?>
+                            <?php esc_html_e('Allow users to like and favorite images', 'photovault'); ?>
                         </p>
                     </fieldset>
                 </td>

@@ -16,10 +16,10 @@ if (!defined('ABSPATH')) {
     
     <?php
     // Show success message if settings were saved
-    if (isset($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
+    if (!empty($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
         ?>
         <div class="notice notice-success is-dismissible">
-            <p><?php _e('Settings saved successfully!', 'photovault'); ?></p>
+            <p><?php esc_html_e('Settings saved successfully!', 'photovault'); ?></p>
         </div>
         <?php
     }
@@ -36,7 +36,6 @@ if (!defined('ABSPATH')) {
     
     <form method="post" action="options.php" class="photovault-settings-form">
         <?php
-
         // Render the appropriate tab
         switch ($data['active_tab']) {
             case 'upload':

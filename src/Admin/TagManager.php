@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin Menu Manager - Updated
+ * Admin Menu Manager - Updated & Secure
  *
  * @package PhotoVault
  */
@@ -22,9 +22,8 @@ class TagManager {
         $this->render_tag_ajax();
     }
 
-    private function render_tag_ajax(){
+    private function render_tag_ajax() {
         // Tag operations
-       
         add_action('wp_ajax_add_tag', [$this->tag_controller, 'add_tag']);
         add_action('wp_ajax_get_tags', [$this->tag_controller, 'get_tags']);
         add_action('wp_ajax_get_images_by_tag', [$this->tag_controller, 'get_images_by_tag']);
@@ -78,24 +77,24 @@ class TagManager {
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'photovault_nonce' => wp_create_nonce('photovault_nonce'),
                 'i18n' => [
-                    'addNewTag' => __('Add New Tag', 'photovault'),
-                    'editTag' => __('Edit Tag', 'photovault'),
-                    'pleaseEnterTagName' => __('Please enter a tag name', 'photovault'),
-                    'saving' => __('Saving...', 'photovault'),
-                    'saveTag' => __('Save Tag', 'photovault'),
-                    'errorSavingTag' => __('Error saving tag', 'photovault'),
-                    'deleteTagConfirm' => __('Are you sure you want to delete this tag? This will remove it from all images.', 'photovault'),
-                    'errorDeletingTag' => __('Error deleting tag', 'photovault'),
-                    'removeTagFromImage' => __('Remove tag from this image', 'photovault'),
-                    'errorLoadingImages' => __('Error loading images. Please try again.', 'photovault'),
-                    'removeTagConfirm' => __('Remove this tag from the image?', 'photovault'),
-                    'failedToRemoveTag' => __('Failed to remove tag', 'photovault'),
-                    'errorRemovingTag' => __('Error removing tag', 'photovault'),
-                    'images' => __('images', 'photovault'),
-                    'pleaseSelectImage' => __('Please select at least one image', 'photovault'),
-                    'assigning' => __('Assigning...', 'photovault'),
-                    'assignSelectedImages' => __('Assign Selected Images', 'photovault'),
-                    'errorAssigningImages' => __('Error assigning images', 'photovault')
+                    'addNewTag' => esc_html__('Add New Tag', 'photovault'),
+                    'editTag' => esc_html__('Edit Tag', 'photovault'),
+                    'pleaseEnterTagName' => esc_html__('Please enter a tag name', 'photovault'),
+                    'saving' => esc_html__('Saving...', 'photovault'),
+                    'saveTag' => esc_html__('Save Tag', 'photovault'),
+                    'errorSavingTag' => esc_html__('Error saving tag', 'photovault'),
+                    'deleteTagConfirm' => esc_html__('Are you sure you want to delete this tag? This will remove it from all images.', 'photovault'),
+                    'errorDeletingTag' => esc_html__('Error deleting tag', 'photovault'),
+                    'removeTagFromImage' => esc_html__('Remove tag from this image', 'photovault'),
+                    'errorLoadingImages' => esc_html__('Error loading images. Please try again.', 'photovault'),
+                    'removeTagConfirm' => esc_html__('Remove this tag from the image?', 'photovault'),
+                    'failedToRemoveTag' => esc_html__('Failed to remove tag', 'photovault'),
+                    'errorRemovingTag' => esc_html__('Error removing tag', 'photovault'),
+                    'images' => esc_html__('images', 'photovault'),
+                    'pleaseSelectImage' => esc_html__('Please select at least one image', 'photovault'),
+                    'assigning' => esc_html__('Assigning...', 'photovault'),
+                    'assignSelectedImages' => esc_html__('Assign Selected Images', 'photovault'),
+                    'errorAssigningImages' => esc_html__('Error assigning images', 'photovault')
                 ]
             ]
         );
@@ -109,8 +108,8 @@ class TagManager {
         // Tags submenu
         add_submenu_page(
             'photovault',
-            __('Tags', 'photovault'),
-            __('Tags', 'photovault'),
+            esc_html__('Tags', 'photovault'),
+            esc_html__('Tags', 'photovault'),
             'upload_files',
             'photovault-tags',
             [$this, 'render_tags_page']
@@ -148,14 +147,16 @@ class TagManager {
             include $view_file;
         } else {
             echo '<div class="wrap">';
-            echo '<h1>' . __('Tag View', 'photovault') . '</h1>';
+            echo '<h1>' . esc_html__('Tag View', 'photovault') . '</h1>';
+
             if ($error) {
                 echo '<div class="notice notice-error"><p>' . esc_html($error) . '</p></div>';
             } else {
-                echo '<div class="notice notice-error"><p>' . __('Template file not found.', 'photovault') . '</p></div>';
+                echo '<div class="notice notice-error"><p>' . esc_html__('Template file not found.', 'photovault') . '</p></div>';
             }
+
             echo '<a href="' . esc_url(admin_url('admin.php?page=photovault-tags')) . '" class="button">';
-            echo __('Back to Tags', 'photovault');
+            echo esc_html__('Back to Tags', 'photovault');
             echo '</a>';
             echo '</div>';
         }
@@ -174,12 +175,14 @@ class TagManager {
         } else {
             echo '<div class="wrap">';
             echo '<h1>' . esc_html__('View not found', 'photovault') . '</h1>';
+
+            // Translators: %s is the missing view filename wrapped in code tags.
             echo '<p>' . sprintf(
-                esc_html__('The view file %s does not exist.', 'photovault'),
+                esc_html__('The view file %1$s does not exist.', 'photovault'),
                 '<code>' . esc_html($view) . '.php</code>'
             ) . '</p>';
+
             echo '</div>';
         }
     }
-    
 }

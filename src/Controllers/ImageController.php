@@ -45,7 +45,8 @@ class ImageController {
                 return;
             }
             
-            // Standard upload
+            // Standard upload - $_FILES is validated by WordPress upload handler
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- File upload handled by WordPress upload handler
             $upload_result = $this->uploader->upload($_FILES['file']);
             
             if (is_wp_error($upload_result)) {
@@ -59,9 +60,9 @@ class ImageController {
             $image_data = [
                 'attachment_id' => $upload_result['attachment_id'],
                 'user_id' => get_current_user_id(),
-                'title' => sanitize_text_field($_POST['title'] ?? ''),
-                'description' => sanitize_textarea_field($_POST['description'] ?? ''),
-                'visibility' => sanitize_text_field($_POST['visibility'] ?? 'private'),
+                'title' => isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '',
+                'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
+                'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : 'private',
                 'file_size' => $processed['file_size'],
                 'width' => $processed['width'],
                 'height' => $processed['height'],
@@ -76,10 +77,14 @@ class ImageController {
             
             // Handle tags
             if (!empty($_POST['tags'])) {
-                $tags = is_array($_POST['tags']) 
-                    ? $_POST['tags'] 
-                    : explode(',', $_POST['tags']);
-                $this->image_model->add_tags($image_id, array_map('trim', $tags));
+                $tags = [];
+                if (is_array($_POST['tags'])) {
+                    $tags = array_map('sanitize_text_field', wp_unslash($_POST['tags']));
+                } else {
+                    $tags_string = sanitize_text_field(wp_unslash($_POST['tags']));
+                    $tags = array_map('trim', explode(',', $tags_string));
+                }
+                $this->image_model->add_tags($image_id, $tags);
             }
             
             // Handle album
@@ -104,14 +109,22 @@ class ImageController {
      * Handle chunked upload
      */
     private function handle_chunked_upload() {
-        $chunk_index = intval($_POST['chunk_index']);
-        $total_chunks = intval($_POST['total_chunks']);
-        $unique_id = sanitize_text_field($_POST['unique_id'] ?? '');
+        // Nonce already verified in upload() method before calling this
+        
+        $chunk_index = isset($_POST['chunk_index']) ? intval($_POST['chunk_index']) : 0;
+        $total_chunks = isset($_POST['total_chunks']) ? intval($_POST['total_chunks']) : 0;
+        $unique_id = isset($_POST['unique_id']) ? sanitize_text_field(wp_unslash($_POST['unique_id'])) : '';
         
         if (empty($unique_id)) {
             wp_send_json_error(['message' => __('Invalid upload ID', 'photovault')]);
         }
         
+        // Validate $_FILES exists
+        if (!isset($_FILES['file'])) {
+            wp_send_json_error(['message' => __('No file chunk uploaded', 'photovault')]);
+        }
+        
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- File upload handled by WordPress upload handler
         $result = $this->uploader->chunked_upload(
             $_FILES['file'],
             $chunk_index,
@@ -130,9 +143,9 @@ class ImageController {
             $image_data = [
                 'attachment_id' => $result['attachment_id'],
                 'user_id' => get_current_user_id(),
-                'title' => sanitize_text_field($_POST['title'] ?? ''),
-                'description' => sanitize_textarea_field($_POST['description'] ?? ''),
-                'visibility' => sanitize_text_field($_POST['visibility'] ?? 'private'),
+                'title' => isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '',
+                'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
+                'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : 'private',
                 'file_size' => $processed['file_size'],
                 'width' => $processed['width'],
                 'height' => $processed['height'],
@@ -142,8 +155,14 @@ class ImageController {
             $image_id = $this->image_model->create($image_data);
             
             if (!empty($_POST['tags'])) {
-                $tags = is_array($_POST['tags']) ? $_POST['tags'] : explode(',', $_POST['tags']);
-                $this->image_model->add_tags($image_id, array_map('trim', $tags));
+                $tags = [];
+                if (is_array($_POST['tags'])) {
+                    $tags = array_map('sanitize_text_field', wp_unslash($_POST['tags']));
+                } else {
+                    $tags_string = sanitize_text_field(wp_unslash($_POST['tags']));
+                    $tags = array_map('trim', explode(',', $tags_string));
+                }
+                $this->image_model->add_tags($image_id, $tags);
             }
             
             if (!empty($_POST['album_id'])) {
@@ -177,11 +196,11 @@ class ImageController {
             'user_id' => get_current_user_id(),
             'album_id' => isset($_POST['album_id']) ? intval($_POST['album_id']) : 0,
             'tag_id' => isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0,
-            'search' => isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '',
+            'search' => isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '',
             'page' => isset($_POST['page']) ? intval($_POST['page']) : 1,
             'per_page' => isset($_POST['per_page']) ? intval($_POST['per_page']) : 20,
-            'sort' => isset($_POST['sort']) ? sanitize_text_field($_POST['sort']) : 'date_desc',
-            'visibility' => isset($_POST['visibility']) ? sanitize_text_field($_POST['visibility']) : '',
+            'sort' => isset($_POST['sort']) ? sanitize_text_field(wp_unslash($_POST['sort'])) : 'date_desc',
+            'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : '',
         ];
         
         $result = $this->image_model->get_images($params);
@@ -195,7 +214,7 @@ class ImageController {
     public function get_image() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_id = intval($_POST['image_id'] ?? 0);
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
         
         if (!$image_id) {
             wp_send_json_error(['message' => __('Invalid image ID', 'photovault')]);
@@ -224,7 +243,7 @@ class ImageController {
     public function update() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_id = intval($_POST['image_id'] ?? 0);
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
         $user_id = get_current_user_id();
         
         if (!$image_id) {
@@ -237,9 +256,9 @@ class ImageController {
         }
         
         $data = [
-            'title' => sanitize_text_field($_POST['title'] ?? ''),
-            'description' => sanitize_textarea_field($_POST['description'] ?? ''),
-            'visibility' => sanitize_text_field($_POST['visibility'] ?? 'private'),
+            'title' => isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '',
+            'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
+            'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : 'private',
         ];
         
         $updated = $this->image_model->update($image_id, $data);
@@ -257,7 +276,7 @@ class ImageController {
     public function delete() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_id = intval($_POST['image_id'] ?? 0);
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
         $user_id = get_current_user_id();
         
         if (!$image_id) {
@@ -284,7 +303,11 @@ class ImageController {
     public function bulk_delete() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_ids = isset($_POST['image_ids']) ? array_map('intval', $_POST['image_ids']) : [];
+        $image_ids = [];
+        if (isset($_POST['image_ids']) && is_array($_POST['image_ids'])) {
+            $image_ids = array_map('intval', wp_unslash($_POST['image_ids']));
+        }
+        
         $user_id = get_current_user_id();
         
         if (empty($image_ids)) {
@@ -301,10 +324,15 @@ class ImageController {
             }
         }
         
+        // Translators: %1$d is the number of images deleted.
         wp_send_json_success([
-            'message' => sprintf(__('%d images deleted successfully', 'photovault'), $deleted_count),
-            'deleted_count' => $deleted_count
+            'message'       => sprintf(
+                __('%1$d images deleted successfully', 'photovault'),
+                $deleted_count
+            ),
+            'deleted_count' => $deleted_count,
         ]);
+
     }
     
     /**
@@ -313,8 +341,12 @@ class ImageController {
     public function add_to_album() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_ids = isset($_POST['image_ids']) ? array_map('intval', $_POST['image_ids']) : [];
-        $album_id = intval($_POST['album_id'] ?? 0);
+        $image_ids = [];
+        if (isset($_POST['image_ids']) && is_array($_POST['image_ids'])) {
+            $image_ids = array_map('intval', wp_unslash($_POST['image_ids']));
+        }
+        
+        $album_id = isset($_POST['album_id']) ? intval($_POST['album_id']) : 0;
         
         if (empty($image_ids) || !$album_id) {
             wp_send_json_error(['message' => __('Invalid parameters', 'photovault')]);
@@ -328,9 +360,14 @@ class ImageController {
             }
         }
         
+        // Translators: %1$d is the number of images added to the album.
         wp_send_json_success([
-            'message' => sprintf(__('%d images added to album', 'photovault'), $added_count),
-            'added_count' => $added_count
+            'message'      => sprintf(
+                __('%1$d images added to album', 'photovault'),
+                $added_count
+            ),
+            'added_count'  => $added_count,
         ]);
+
     }
 }

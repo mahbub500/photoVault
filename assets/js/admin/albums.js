@@ -13,11 +13,11 @@ jQuery(document).ready(function($) {
         $('#pv-albums-grid').empty();
 
         $.ajax({
-            url: photoVaultAlbum.ajaxUrl,
+            url: photoVault.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'pv_get_albums',
-                nonce: photoVaultAlbum.nonce
+                nonce: photoVault.nonce
             },
             success: function(response) {
                 $('#pv-albums-loading').hide();
@@ -25,12 +25,12 @@ jQuery(document).ready(function($) {
                 if (response.success && response.data) {
                     displayAlbums(response.data);
                 } else {
-                    $('#pv-albums-grid').html('<div class="pv-empty-state"><p>' + photoVaultAlbum.i18n.noAlbums + '</p></div>');
+                    $('#pv-albums-grid').html('<div class="pv-empty-state"><p>' + photoVault.i18n.noAlbums + '</p></div>');
                 }
             },
             error: function() {
                 $('#pv-albums-loading').hide();
-                alert(photoVaultAlbum.i18n.errorLoadingAlbums);
+                alert(photoVault.i18n.errorLoadingAlbums);
             }
         });
     }
@@ -43,12 +43,12 @@ jQuery(document).ready(function($) {
         $grid.empty();
 
         if (!albums || albums.length === 0) {
-            $grid.html('<div class="pv-empty-state"><p>' + photoVaultAlbum.i18n.noAlbums + '</p></div>');
+            $grid.html('<div class="pv-empty-state"><p>' + photoVault.i18n.noAlbums + '</p></div>');
             return;
         }
 
         albums.forEach(function(album) {
-            const coverImage = album.cover_image_url || photoVaultAlbum.defaultCover;
+            const coverImage = album.cover_image_url || photoVault.defaultCover;
             const imageCount = album.image_count || 0;
             const createdDate = album.created_at || '';
 
@@ -58,7 +58,7 @@ jQuery(document).ready(function($) {
                         <img src="${coverImage}" alt="${album.name}">
                         <div class="pv-album-overlay">
                             <button class="button button-primary pv-view-album" data-album-id="${album.id}">
-                                ${photoVaultAlbum.i18n.viewAlbum}
+                                ${photoVault.i18n.viewAlbum}
                             </button>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ jQuery(document).ready(function($) {
                         <h3 class="pv-album-name">${album.name}</h3>
                         <p class="pv-album-description">${album.description || ''}</p>
                         <div class="pv-album-meta">
-                            <span class="pv-album-count">${imageCount} ${photoVaultAlbum.i18n.images}</span>
+                            <span class="pv-album-count">${imageCount} ${photoVault.i18n.images}</span>
                             <span class="pv-album-visibility">${album.visibility}</span>
                         </div>
                     </div>
@@ -84,7 +84,7 @@ jQuery(document).ready(function($) {
         isEditMode = false;
         currentAlbumId = null;
         
-        $('#pv-album-modal-title').text(photoVaultAlbum.i18n.createNewAlbum);
+        $('#pv-album-modal-title').text(photoVault.i18n.createNewAlbum);
         $('#pv-album-name').val('');
         $('#pv-album-description').val('');
         $('#pv-album-visibility').val('private');
@@ -108,11 +108,11 @@ jQuery(document).ready(function($) {
         currentAlbumId = albumId;
         
         $.ajax({
-            url: photoVaultAlbum.ajaxUrl,
+            url: photoVault.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'pv_get_album_details',
-                nonce: photoVaultAlbum.nonce,
+                nonce: photoVault.nonce,
                 album_id: albumId
             },
             success: function(response) {
@@ -120,11 +120,11 @@ jQuery(document).ready(function($) {
                     displayAlbumDetails(response.data);
                     $('#pv-album-detail-modal').fadeIn(300);
                 } else {
-                    alert(response.data.message || photoVaultAlbum.i18n.errorLoadingAlbum);
+                    alert(response.data.message || photoVault.i18n.errorLoadingAlbum);
                 }
             },
             error: function() {
-                alert(photoVaultAlbum.i18n.errorLoadingAlbum);
+                alert(photoVault.i18n.errorLoadingAlbum);
             }
         });
     }
@@ -135,7 +135,7 @@ jQuery(document).ready(function($) {
     function displayAlbumDetails(album) {
         $('#pv-album-detail-name').text(album.name);
         $('#pv-album-detail-description').text(album.description || '');
-        $('#pv-album-detail-count').text(album.image_count + ' ' + photoVaultAlbum.i18n.images);
+        $('#pv-album-detail-count').text(album.image_count + ' ' + photoVault.i18n.images);
         $('#pv-album-detail-date').text(album.created_at);
 
         const $imagesGrid = $('#pv-album-images');
@@ -154,7 +154,7 @@ jQuery(document).ready(function($) {
                 $imagesGrid.append(html);
             });
         } else {
-            $imagesGrid.html('<div class="pv-empty-state"><p>' + photoVaultAlbum.i18n.noImagesInAlbum + '</p></div>');
+            $imagesGrid.html('<div class="pv-empty-state"><p>' + photoVault.i18n.noImagesInAlbum + '</p></div>');
         }
     }
 
@@ -167,17 +167,17 @@ jQuery(document).ready(function($) {
         const visibility = $('#pv-album-visibility').val();
 
         if (!name) {
-            alert(photoVaultAlbum.i18n.albumNameRequired);
+            alert(photoVault.i18n.albumNameRequired);
             return;
         }
 
         const $btn = $(this);
-        $btn.prop('disabled', true).text(photoVaultAlbum.i18n.saving);
+        $btn.prop('disabled', true).text(photoVault.i18n.saving);
 
         const action = isEditMode ? 'pv_update_album' : 'pv_create_album';
         const data = {
             action: action,
-            nonce: photoVaultAlbum.nonce,
+            nonce: photoVault.nonce,
             name: name,
             description: description,
             visibility: visibility
@@ -188,7 +188,7 @@ jQuery(document).ready(function($) {
         }
 
         $.ajax({
-            url: photoVaultAlbum.ajaxUrl,
+            url: photoVault.ajaxUrl,
             type: 'POST',
             data: data,
             success: function(response) {
@@ -200,13 +200,13 @@ jQuery(document).ready(function($) {
                         currentAlbumId = response.data.album_id;
                     }
                 } else {
-                    alert(response.data.message || photoVaultAlbum.i18n.errorSavingAlbum);
+                    alert(response.data.message || photoVault.i18n.errorSavingAlbum);
                 }
-                $btn.prop('disabled', false).text(photoVaultAlbum.i18n.saveAlbum);
+                $btn.prop('disabled', false).text(photoVault.i18n.saveAlbum);
             },
             error: function() {
-                alert(photoVaultAlbum.i18n.errorSavingAlbum);
-                $btn.prop('disabled', false).text(photoVaultAlbum.i18n.saveAlbum);
+                alert(photoVault.i18n.errorSavingAlbum);
+                $btn.prop('disabled', false).text(photoVault.i18n.saveAlbum);
             }
         });
     });
@@ -220,18 +220,18 @@ jQuery(document).ready(function($) {
         isEditMode = true;
         
         $.ajax({
-            url: photoVaultAlbum.ajaxUrl,
+            url: photoVault.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'pv_get_album_details',
-                nonce: photoVaultAlbum.nonce,
+                nonce: photoVault.nonce,
                 album_id: currentAlbumId
             },
             success: function(response) {
                 if (response.success && response.data) {
                     const album = response.data;
                     
-                    $('#pv-album-modal-title').text(photoVaultAlbum.i18n.editAlbum);
+                    $('#pv-album-modal-title').text(photoVault.i18n.editAlbum);
                     $('#pv-album-name').val(album.name);
                     $('#pv-album-description').val(album.description || '');
                     $('#pv-album-visibility').val(album.visibility);
@@ -241,7 +241,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert(photoVaultAlbum.i18n.errorLoadingAlbum);
+                alert(photoVault.i18n.errorLoadingAlbum);
             }
         });
     });
@@ -252,16 +252,16 @@ jQuery(document).ready(function($) {
     $('#pv-delete-album').on('click', function() {
         if (!currentAlbumId) return;
 
-        if (!confirm(photoVaultAlbum.i18n.deleteAlbumConfirm)) {
+        if (!confirm(photoVault.i18n.deleteAlbumConfirm)) {
             return;
         }
 
         $.ajax({
-            url: photoVaultAlbum.ajaxUrl,
+            url: photoVault.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'pv_delete_album',
-                nonce: photoVaultAlbum.nonce,
+                nonce: photoVault.nonce,
                 album_id: currentAlbumId
             },
             success: function(response) {
@@ -270,11 +270,11 @@ jQuery(document).ready(function($) {
                     loadAlbums();
                     currentAlbumId = null;
                 } else {
-                    alert(response.data.message || photoVaultAlbum.i18n.errorDeletingAlbum);
+                    alert(response.data.message || photoVault.i18n.errorDeletingAlbum);
                 }
             },
             error: function() {
-                alert(photoVaultAlbum.i18n.errorDeletingAlbum);
+                alert(photoVault.i18n.errorDeletingAlbum);
             }
         });
     });
@@ -287,7 +287,7 @@ jQuery(document).ready(function($) {
         
         // This would open an image selector modal
         // Implementation depends on your image selection system
-        alert(photoVaultAlbum.i18n.featureComingSoon);
+        alert(photoVault.i18n.featureComingSoon);
     });
 
     /**
@@ -298,7 +298,7 @@ jQuery(document).ready(function($) {
         
         // This would open a sharing modal
         // Implementation depends on your sharing system
-        alert(photoVaultAlbum.i18n.featureComingSoon);
+        alert(photoVault.i18n.featureComingSoon);
     });
 
     /**
@@ -308,7 +308,7 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!confirm(photoVaultAlbum.i18n.removeImageConfirm)) {
+        if (!confirm(photoVault.i18n.removeImageConfirm)) {
             return;
         }
 
@@ -316,11 +316,11 @@ jQuery(document).ready(function($) {
         const $imageItem = $(this).closest('.pv-album-image');
 
         $.ajax({
-            url: photoVaultAlbum.ajaxUrl,
+            url: photoVault.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'pv_remove_image_from_album',
-                nonce: photoVaultAlbum.nonce,
+                nonce: photoVault.nonce,
                 album_id: currentAlbumId,
                 image_id: imageId
             },
@@ -330,15 +330,15 @@ jQuery(document).ready(function($) {
                         $(this).remove();
                         
                         if ($('#pv-album-images .pv-album-image').length === 0) {
-                            $('#pv-album-images').html('<div class="pv-empty-state"><p>' + photoVaultAlbum.i18n.noImagesInAlbum + '</p></div>');
+                            $('#pv-album-images').html('<div class="pv-empty-state"><p>' + photoVault.i18n.noImagesInAlbum + '</p></div>');
                         }
                     });
                 } else {
-                    alert(response.data.message || photoVaultAlbum.i18n.errorRemovingImage);
+                    alert(response.data.message || photoVault.i18n.errorRemovingImage);
                 }
             },
             error: function() {
-                alert(photoVaultAlbum.i18n.errorRemovingImage);
+                alert(photoVault.i18n.errorRemovingImage);
             }
         });
     });

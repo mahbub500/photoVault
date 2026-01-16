@@ -245,9 +245,10 @@ class ImageUploader {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             return new \WP_Error('upload_error', $this->get_upload_error_message($file['error']));
         }
-        
+
         // Check file size
         if ($file['size'] > $this->max_file_size) {
+            // translators: %s is the maximum allowed file size (e.g., "10 MB").
             return new \WP_Error(
                 'file_too_large',
                 sprintf(
@@ -256,15 +257,17 @@ class ImageUploader {
                 )
             );
         }
-        
+
+
         // Check if file exists
         if (!isset($file['tmp_name']) || !file_exists($file['tmp_name'])) {
             return new \WP_Error('file_not_found', __('Temporary file not found', 'photovault'));
         }
-        
+
         // Check file type
         $file_type = wp_check_filetype($file['name']);
-        if (!in_array(strtolower($file_type['ext']), $this->allowed_types)) {
+        if (!in_array(strtolower($file_type['ext']), $this->allowed_types, true)) {
+            // translators: %s is a comma-separated list of allowed file types.
             return new \WP_Error(
                 'invalid_file_type',
                 sprintf(
@@ -273,30 +276,34 @@ class ImageUploader {
                 )
             );
         }
-        
+
+
         // Validate image
         $image_info = @getimagesize($file['tmp_name']);
         if ($image_info === false) {
             return new \WP_Error('invalid_image', __('File is not a valid image', 'photovault'));
         }
-        
+
         // Check image dimensions (optional limit)
-        $max_width = 10000; // 10k pixels
+        $max_width  = 10000; // 10k pixels
         $max_height = 10000;
-        
+
         if ($image_info[0] > $max_width || $image_info[1] > $max_height) {
+            // translators: %1$d and %2$d are maximum image width and height in pixels.
             return new \WP_Error(
                 'image_too_large',
                 sprintf(
-                    __('Image dimensions exceed maximum of %dx%d pixels', 'photovault'),
+                    __('Image dimensions exceed maximum of %1$d×%2$d pixels', 'photovault'),
                     $max_width,
                     $max_height
                 )
             );
         }
-        
+
+
         return true;
     }
+
     
     /**
      * Get upload error message

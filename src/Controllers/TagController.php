@@ -22,8 +22,8 @@ class TagController {
     public function add_tag() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_id = intval($_POST['image_id'] ?? 0);
-        $tag_name = sanitize_text_field($_POST['tag_name'] ?? '');
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
+        $tag_name = isset($_POST['tag_name']) ? sanitize_text_field(wp_unslash($_POST['tag_name'])) : '';
         
         if (empty($tag_name)) {
             wp_send_json_error(['message' => __('Tag name is required', 'photovault')]);
@@ -64,10 +64,10 @@ class TagController {
     public function get_tags() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $search = sanitize_text_field($_POST['search'] ?? '');
-        $orderby = sanitize_text_field($_POST['orderby'] ?? 'name');
-        $order = sanitize_text_field($_POST['order'] ?? 'ASC');
-        $limit = intval($_POST['limit'] ?? 0);
+        $search = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
+        $orderby = isset($_POST['orderby']) ? sanitize_text_field(wp_unslash($_POST['orderby'])) : 'name';
+        $order = isset($_POST['order']) ? sanitize_text_field(wp_unslash($_POST['order'])) : 'ASC';
+        $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 0;
         
         $tags = $this->tag_model->get_tags([
             'search' => $search,
@@ -85,7 +85,7 @@ class TagController {
     public function get_popular_tags() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $limit = intval($_POST['limit'] ?? 10);
+        $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 10;
         $tags = $this->tag_model->get_popular($limit);
         
         wp_send_json_success($tags);
@@ -97,8 +97,8 @@ class TagController {
     public function remove_tag() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_id = intval($_POST['image_id'] ?? 0);
-        $tag_id = intval($_POST['tag_id'] ?? 0);
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
+        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
         
         if (!current_user_can('photovault_edit_images')) {
             wp_send_json_error(['message' => __('You do not have permission to remove tags', 'photovault')]);
@@ -119,9 +119,9 @@ class TagController {
     public function get_images_by_tag() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $tag_id = intval($_POST['tag_id'] ?? 0);
-        $limit = intval($_POST['limit'] ?? 20);
-        $offset = intval($_POST['offset'] ?? 0);
+        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
+        $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
+        $offset = isset($_POST['offset']) ? intval($_POST['offset']) : 0;
         
         if (!$tag_id) {
             wp_send_json_error(['message' => __('Tag ID is required', 'photovault')]);
@@ -183,7 +183,8 @@ class TagController {
      * This method returns data instead of rendering directly
      */
     public function get_tag_view_data() {
-        $tag_id = intval($_GET['tag_id'] ?? 0);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading GET parameter for data retrieval in admin context, not processing form
+        $tag_id = isset($_GET['tag_id']) ? intval($_GET['tag_id']) : 0;
         
         if (!$tag_id) {
             return [
@@ -255,9 +256,9 @@ class TagController {
             wp_send_json_error(['message' => __('You do not have permission to update tags', 'photovault')]);
         }
         
-        $tag_id = intval($_POST['tag_id'] ?? 0);
-        $name = sanitize_text_field($_POST['name'] ?? '');
-        $color = sanitize_hex_color($_POST['color'] ?? '#667eea');
+        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
+        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        $color = isset($_POST['color']) ? sanitize_hex_color(wp_unslash($_POST['color'])) : '#667eea';
         
         if (!$tag_id || empty($name)) {
             wp_send_json_error(['message' => __('Tag ID and name are required', 'photovault')]);
@@ -289,7 +290,7 @@ class TagController {
             wp_send_json_error(['message' => __('You do not have permission to delete tags', 'photovault')]);
         }
         
-        $tag_id = intval($_POST['tag_id'] ?? 0);
+        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
         
         if (!$tag_id) {
             wp_send_json_error(['message' => __('Tag ID is required', 'photovault')]);
@@ -310,7 +311,7 @@ class TagController {
     public function get_image_tags() {
         check_ajax_referer('photovault_nonce', 'nonce');
         
-        $image_id = intval($_POST['image_id'] ?? 0);
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
         
         if (!$image_id) {
             wp_send_json_error(['message' => __('Image ID is required', 'photovault')]);
@@ -366,8 +367,13 @@ class TagController {
             wp_send_json_error(['message' => __('No permission', 'photovault')]);
         }
         
-        $tag_id = intval($_POST['tag_id'] ?? 0);
-        $image_ids = $_POST['image_ids'] ?? [];
+        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
+        
+        // Sanitize image IDs array
+        $image_ids = [];
+        if (isset($_POST['image_ids']) && is_array($_POST['image_ids'])) {
+            $image_ids = array_map('intval', wp_unslash($_POST['image_ids']));
+        }
         
         if (!$tag_id || empty($image_ids)) {
             wp_send_json_error(['message' => __('Missing data', 'photovault')]);
@@ -378,8 +384,6 @@ class TagController {
         $success_count = 0;
         
         foreach ($image_ids as $image_id) {
-            $image_id = intval($image_id);
-            
             // Verify ownership
             $owns = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) FROM {$wpdb->prefix}pv_images 
@@ -389,7 +393,9 @@ class TagController {
             
             if ($owns) {
                 $result = $this->tag_model->add_to_image($image_id, $tag_id);
-                if ($result) $success_count++;
+                if ($result) {
+                    $success_count++;
+                }
             }
         }
         
