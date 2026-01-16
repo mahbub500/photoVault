@@ -325,8 +325,9 @@ class ImageController {
         }
         
         // Translators: %1$d is the number of images deleted.
-        wp_send_json_success([
+       wp_send_json_success([
             'message'       => sprintf(
+                // translators: %1$d is the number of images deleted.
                 __('%1$d images deleted successfully', 'photovault'),
                 $deleted_count
             ),
@@ -363,6 +364,7 @@ class ImageController {
         // Translators: %1$d is the number of images added to the album.
         wp_send_json_success([
             'message'      => sprintf(
+                // translators: %1$d is the number of images added to the album.
                 __('%1$d images added to album', 'photovault'),
                 $added_count
             ),
