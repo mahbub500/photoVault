@@ -144,10 +144,15 @@ class ShortcodeManager {
                     <input type="file" name="images[]" id="pv-frontend-files" multiple accept="image/*" required>
                     
                     <?php
-                    // translators: %d is the maximum number of files allowed to upload.
                     printf(
                         '<small>%s</small>',
-                        esc_html(sprintf(__('Maximum %d files', 'photovault'), $atts['max_files']))
+                        esc_html(
+                            sprintf(
+                                // translators: %d is the maximum number of files allowed to upload.
+                                __('Maximum %d files', 'photovault'),
+                                $atts['max_files']
+                            )
+                        )
                     );
                     ?>
                 </div>
