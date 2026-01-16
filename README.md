@@ -1,11 +1,11 @@
 === PhotoVault ===
 Contributors: mahbubmr500
-Donate link: https://example.com/donate
+Donate link: https://buymeacoffee.com/mahbubmr500
 Tags: gallery, photos, albums, image management, private gallery
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -161,6 +161,11 @@ Yes! Use the `[photovault_upload]` shortcode to display a frontend upload form. 
 
 == Changelog ==
 
+= 1.0.1 - 2025-01-17 =
+* Updated compatibility testing for WordPress 6.9
+* Fixed plugin header validation
+* Minor documentation updates
+
 = 1.0.0 - 2025-01-17 =
 * Initial release
 * Core gallery and album functionality
@@ -178,6 +183,9 @@ Yes! Use the `[photovault_upload]` shortcode to display a frontend upload form. 
 * Performance optimization
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Compatibility update for WordPress 6.9. Recommended for all users.
 
 = 1.0.0 =
 Initial release of PhotoVault. Install and start managing your photo galleries professionally!
