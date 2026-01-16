@@ -4,18 +4,17 @@
  *
  * @package PhotoVault
  */
-
 // Exit if accessed directly
 if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-
 <div class="wrap photovault-settings-wrap">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     
     <?php
     // Show success message if settings were saved
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified by WordPress settings API via settings_fields().
     if (!empty($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
         ?>
         <div class="notice notice-success is-dismissible">
