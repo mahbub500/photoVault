@@ -69,23 +69,28 @@ class Image {
         $join = [];
         $query_params = [];
         
+        // Table names (safe because they use $wpdb->prefix)
+        $shares_table = $wpdb->prefix . 'pv_shares';
+        $image_album_table = $wpdb->prefix . 'pv_image_album';
+        $image_tag_table = $wpdb->prefix . 'pv_image_tag';
+        
         // User filter (own images + shared with user)
         $where[] = "(i.user_id = %d OR s.shared_with = %d)";
         $query_params[] = $params['user_id'];
         $query_params[] = $params['user_id'];
         
-        $join[] = "LEFT JOIN {$wpdb->prefix}pv_shares s ON (s.item_type = 'image' AND s.item_id = i.id)";
+        $join[] = "LEFT JOIN {$shares_table} s ON (s.item_type = 'image' AND s.item_id = i.id)";
         
         // Album filter
         if ($params['album_id'] > 0) {
-            $join[] = "INNER JOIN {$wpdb->prefix}pv_image_album ia ON i.id = ia.image_id";
+            $join[] = "INNER JOIN {$image_album_table} ia ON i.id = ia.image_id";
             $where[] = "ia.album_id = %d";
             $query_params[] = $params['album_id'];
         }
         
         // Tag filter
         if ($params['tag_id'] > 0) {
-            $join[] = "INNER JOIN {$wpdb->prefix}pv_image_tag it ON i.id = it.image_id";
+            $join[] = "INNER JOIN {$image_tag_table} it ON i.id = it.image_id";
             $where[] = "it.tag_id = %d";
             $query_params[] = $params['tag_id'];
         }
@@ -122,6 +127,7 @@ class Image {
         $query_params[] = $offset;
         
         // Get images
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table names use $wpdb->prefix, all user inputs properly prepared.
         $images = $wpdb->get_results($wpdb->prepare($sql, $query_params));
         
         // Get total count
@@ -134,7 +140,14 @@ class Image {
         }
         
         $count_params = array_slice($query_params, 0, count($query_params) - 2);
-        $total = $wpdb->get_var($wpdb->prepare($count_sql, $count_params));
+        
+        if (!empty($count_params)) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Table names use $wpdb->prefix, all user inputs properly prepared.
+            $total = $wpdb->get_var($wpdb->prepare($count_sql, $count_params));
+        } else {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+            $total = $wpdb->get_var($count_sql);
+        }
         
         // Enhance images with additional data
         foreach ($images as &$image) {
@@ -161,12 +174,17 @@ class Image {
     public function get($image_id) {
         global $wpdb;
         
-        $sql = "SELECT i.*, p.guid as url 
-                FROM {$this->table} i
-                LEFT JOIN {$wpdb->posts} p ON i.attachment_id = p.ID
-                WHERE i.id = %d";
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
+        $sql = $wpdb->prepare(
+            "SELECT i.*, p.guid as url 
+            FROM {$this->table} i
+            LEFT JOIN {$wpdb->posts} p ON i.attachment_id = p.ID
+            WHERE i.id = %d",
+            $image_id
+        );
         
-        $image = $wpdb->get_row($wpdb->prepare($sql, $image_id));
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query properly prepared above.
+        $image = $wpdb->get_row($sql);
         
         if ($image) {
             $image->tags = $this->get_image_tags($image_id);
@@ -208,6 +226,7 @@ class Image {
         global $wpdb;
         
         // Get attachment ID
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $attachment_id = $wpdb->get_var($wpdb->prepare(
             "SELECT attachment_id FROM {$this->table} WHERE id = %d",
             $image_id
@@ -215,9 +234,9 @@ class Image {
         
         // Delete from database
         $wpdb->delete($this->table, ['id' => $image_id]);
-        $wpdb->delete("{$wpdb->prefix}pv_image_album", ['image_id' => $image_id]);
-        $wpdb->delete("{$wpdb->prefix}pv_image_tag", ['image_id' => $image_id]);
-        $wpdb->delete("{$wpdb->prefix}pv_shares", [
+        $wpdb->delete($wpdb->prefix . 'pv_image_album', ['image_id' => $image_id]);
+        $wpdb->delete($wpdb->prefix . 'pv_image_tag', ['image_id' => $image_id]);
+        $wpdb->delete($wpdb->prefix . 'pv_shares', [
             'item_type' => 'image',
             'item_id' => $image_id
         ]);
@@ -253,7 +272,7 @@ class Image {
             ));
             
             if (!$tag_id) {
-                $wpdb->insert("{$wpdb->prefix}pv_tags", [
+                $wpdb->insert($wpdb->prefix . 'pv_tags', [
                     'name' => $tag_name,
                     'slug' => $slug
                 ]);
@@ -261,7 +280,7 @@ class Image {
             }
             
             // Link tag to image
-            $wpdb->replace("{$wpdb->prefix}pv_image_tag", [
+            $wpdb->replace($wpdb->prefix . 'pv_image_tag', [
                 'image_id' => $image_id,
                 'tag_id' => $tag_id
             ]);
@@ -289,7 +308,7 @@ class Image {
     public function add_to_album($image_id, $album_id) {
         global $wpdb;
         
-        return $wpdb->replace("{$wpdb->prefix}pv_image_album", [
+        return $wpdb->replace($wpdb->prefix . 'pv_image_album', [
             'image_id' => $image_id,
             'album_id' => $album_id
         ]) !== false;
@@ -339,6 +358,7 @@ class Image {
     public function user_owns_image($image_id, $user_id) {
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses $wpdb->prefix, safe for interpolation.
         $owner_id = $wpdb->get_var($wpdb->prepare(
             "SELECT user_id FROM {$this->table} WHERE id = %d",
             $image_id
