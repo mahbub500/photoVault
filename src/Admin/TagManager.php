@@ -175,13 +175,11 @@ class TagManager {
         } else {
             echo '<div class="wrap">';
             echo '<h1>' . esc_html__('View not found', 'photovault') . '</h1>';
-
-            // Translators: %s is the missing view filename wrapped in code tags.
             echo '<p>' . sprintf(
+                // translators: %1$s is the missing view filename wrapped in code tags.
                 esc_html__('The view file %1$s does not exist.', 'photovault'),
                 '<code>' . esc_html($view) . '.php</code>'
             ) . '</p>';
-
             echo '</div>';
         }
     }
