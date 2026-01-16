@@ -120,7 +120,7 @@ class TagManager {
      * Render tags page
      */
     public function render_tags_page() {
-        // Check if viewing a specific tag
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET parameter for navigation, not processing user input.
         if (isset($_GET['tag_id']) && !empty($_GET['tag_id'])) {
             $this->render_tag_view_page();
         } else {
