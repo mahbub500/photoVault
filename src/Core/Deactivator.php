@@ -62,6 +62,13 @@ class Deactivator {
             return;
         }
         
+        // Initialize WP_Filesystem
+        global $wp_filesystem;
+        if (empty($wp_filesystem)) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+        
         $files = array_diff(scandir($dir), ['.', '..', '.htaccess', 'index.php']);
         
         foreach ($files as $file) {
@@ -69,9 +76,9 @@ class Deactivator {
             
             if (is_dir($path)) {
                 self::delete_directory_contents($path);
-                @rmdir($path);
+                $wp_filesystem->rmdir($path);
             } else {
-                @unlink($path);
+                wp_delete_file($path);
             }
         }
     }
@@ -150,7 +157,8 @@ class Deactivator {
         ];
         
         foreach ($tables as $table) {
-            $wpdb->query("DROP TABLE IF EXISTS $table");
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names use $wpdb->prefix, safe for interpolation.
+            $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS {$table}"));
         }
         
         // Delete upload directory (optional - be careful!)
@@ -161,7 +169,15 @@ class Deactivator {
         
         if (file_exists($photovault_dir)) {
             self::delete_directory_contents($photovault_dir);
-            @rmdir($photovault_dir);
+            
+            // Initialize WP_Filesystem
+            global $wp_filesystem;
+            if (empty($wp_filesystem)) {
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+                WP_Filesystem();
+            }
+            
+            $wp_filesystem->rmdir($photovault_dir);
         }
         */
         
