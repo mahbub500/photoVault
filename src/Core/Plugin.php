@@ -73,6 +73,7 @@ class Plugin {
      * Load plugin textdomain for translations
      */
     private function load_textdomain() {
+        // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomain -- Manual loading for custom distribution outside WordPress.org.
         load_plugin_textdomain(
             'photovault',
             false,

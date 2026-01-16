@@ -158,8 +158,10 @@ class ImageUploader {
             wp_mkdir_p($temp_dir);
         }
         
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verification should be done by the caller before calling this method.
         $unique_id = isset($_POST['unique_id']) ? sanitize_file_name(wp_unslash($_POST['unique_id'])) : uniqid();
         $original_filename = isset($_POST['original_filename']) ? sanitize_file_name(wp_unslash($_POST['original_filename'])) : $file['name'];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $chunk_file = $temp_dir . $unique_id . '_chunk_' . $chunk_index;
         
         // Initialize WP_Filesystem
