@@ -303,7 +303,7 @@ class SettingsManager {
         
         // Set headers for download
         header('Content-Type: application/json');
-        header('Content-Disposition: attachment; filename="photovault-settings-' . date('Y-m-d') . '.json"');
+        header('Content-Disposition: attachment; filename="photovault-settings-' . gmdate('Y-m-d') . '.json"');
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('Pragma: no-cache');
         header('Expires: 0');
@@ -322,7 +322,10 @@ class SettingsManager {
         
         check_admin_referer('photovault_import_settings');
         
-        if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
+        // Validate that the file was uploaded
+        if (!isset($_FILES['import_file']) || 
+            !isset($_FILES['import_file']['error']) || 
+            !isset($_FILES['import_file']['tmp_name'])) {
             wp_safe_redirect(add_query_arg([
                 'page' => 'photovault-settings',
                 'tab' => 'general',
@@ -331,7 +334,31 @@ class SettingsManager {
             exit;
         }
         
-        $file_content = file_get_contents($_FILES['import_file']['tmp_name']);
+        // Check for upload errors
+        if ($_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
+            wp_safe_redirect(add_query_arg([
+                'page' => 'photovault-settings',
+                'tab' => 'general',
+                'error' => 'upload_failed'
+            ], admin_url('admin.php')));
+            exit;
+        }
+        
+        // Sanitize the file path
+        $tmp_file = sanitize_text_field(wp_unslash($_FILES['import_file']['tmp_name']));
+        
+        // Validate file exists
+        if (!file_exists($tmp_file)) {
+            wp_safe_redirect(add_query_arg([
+                'page' => 'photovault-settings',
+                'tab' => 'general',
+                'error' => 'upload_failed'
+            ], admin_url('admin.php')));
+            exit;
+        }
+        
+        // Read and decode file content
+        $file_content = file_get_contents($tmp_file);
         $settings = json_decode($file_content, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
