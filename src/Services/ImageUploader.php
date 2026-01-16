@@ -87,7 +87,8 @@ class ImageUploader {
         }
         
         // Get file extension from URL
-        $file_ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+        $parsed_url = wp_parse_url($url);
+        $file_ext = pathinfo($parsed_url['path'], PATHINFO_EXTENSION);
         if (empty($file_ext)) {
             $file_ext = 'jpg'; // Default to jpg
         }
@@ -106,7 +107,7 @@ class ImageUploader {
         
         // Clean up temp file
         if (file_exists($tmp_file)) {
-            @unlink($tmp_file);
+            wp_delete_file($tmp_file);
         }
         
         return $result;
@@ -157,12 +158,19 @@ class ImageUploader {
             wp_mkdir_p($temp_dir);
         }
         
-        $unique_id = sanitize_file_name($_POST['unique_id'] ?? uniqid());
-        $original_filename = sanitize_file_name($_POST['original_filename'] ?? $file['name']);
+        $unique_id = isset($_POST['unique_id']) ? sanitize_file_name(wp_unslash($_POST['unique_id'])) : uniqid();
+        $original_filename = isset($_POST['original_filename']) ? sanitize_file_name(wp_unslash($_POST['original_filename'])) : $file['name'];
         $chunk_file = $temp_dir . $unique_id . '_chunk_' . $chunk_index;
         
-        // Save chunk
-        if (!move_uploaded_file($file['tmp_name'], $chunk_file)) {
+        // Initialize WP_Filesystem
+        global $wp_filesystem;
+        if (empty($wp_filesystem)) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+        
+        // Move uploaded file using WP_Filesystem
+        if (!$wp_filesystem->move($file['tmp_name'], $chunk_file, true)) {
             return new \WP_Error('chunk_upload_failed', __('Failed to save chunk', 'photovault'));
         }
         
@@ -191,31 +199,38 @@ class ImageUploader {
         $temp_dir = $upload_dir['basedir'] . '/photovault/temp/';
         $final_file = $temp_dir . sanitize_file_name($filename);
         
-        // Combine chunks
-        $out = fopen($final_file, 'wb');
-        if (!$out) {
-            return new \WP_Error('file_creation_failed', __('Failed to create file', 'photovault'));
+        // Initialize WP_Filesystem
+        global $wp_filesystem;
+        if (empty($wp_filesystem)) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
         }
+        
+        // Combine chunks
+        $combined_content = '';
         
         for ($i = 0; $i < $total_chunks; $i++) {
             $chunk_file = $temp_dir . $unique_id . '_chunk_' . $i;
             
-            if (!file_exists($chunk_file)) {
-                fclose($out);
+            if (!$wp_filesystem->exists($chunk_file)) {
                 return new \WP_Error('chunk_missing', __('Chunk file missing', 'photovault'));
             }
             
-            $in = fopen($chunk_file, 'rb');
-            while ($buff = fread($in, 4096)) {
-                fwrite($out, $buff);
+            $chunk_content = $wp_filesystem->get_contents($chunk_file);
+            if ($chunk_content === false) {
+                return new \WP_Error('chunk_read_failed', __('Failed to read chunk', 'photovault'));
             }
-            fclose($in);
+            
+            $combined_content .= $chunk_content;
             
             // Delete chunk
-            @unlink($chunk_file);
+            wp_delete_file($chunk_file);
         }
         
-        fclose($out);
+        // Write combined content to final file
+        if (!$wp_filesystem->put_contents($final_file, $combined_content, FS_CHMOD_FILE)) {
+            return new \WP_Error('file_creation_failed', __('Failed to create file', 'photovault'));
+        }
         
         // Upload the combined file
         $file_array = [
@@ -223,13 +238,13 @@ class ImageUploader {
             'tmp_name' => $final_file,
             'type' => mime_content_type($final_file),
             'error' => 0,
-            'size' => filesize($final_file)
+            'size' => $wp_filesystem->size($final_file)
         ];
         
         $result = $this->upload($file_array);
         
         // Clean up
-        @unlink($final_file);
+        wp_delete_file($final_file);
         
         return $result;
     }
