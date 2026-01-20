@@ -241,6 +241,8 @@
     cursor: pointer;
     border: 3px solid transparent;
     transition: all 0.2s ease;
+    height: 100%;
+    width: 100%;
 }
 
 .pv-selector-image:hover {
@@ -446,5 +448,845 @@
     .pv-image-selector-pagination .button {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/**
+ * PhotoVault - Image Selector Styles
+ * Add this to your albums.css file
+ */
+
+/* ================================
+   Image Selector Modal
+   ================================ */
+.pv-image-selector-content {
+    max-width: 1000px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.pv-image-selector-content h2 {
+    margin: 0 0 20px 0;
+}
+
+/* ================================
+   Toolbar
+   ================================ */
+.pv-image-selector-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.pv-search-input {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 16px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.pv-search-input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.pv-image-selector-stats {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d2327;
+}
+
+#pv-selected-count {
+    padding: 6px 12px;
+    background: #f0f0f1;
+    border-radius: 4px;
+}
+
+/* ================================
+   Image Grid
+   ================================ */
+.pv-image-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    background: #f9f9f9;
+}
+
+/* Prevent grid items from overlapping */
+.pv-image-selector-grid > * {
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Custom scrollbar for grid */
+.pv-image-selector-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pv-image-selector-grid::-webkit-scrollbar-track {
+    background: #f0f0f1;
+    border-radius: 4px;
+}
+
+.pv-image-selector-grid::-webkit-scrollbar-thumb {
+    background: #c3c4c7;
+    border-radius: 4px;
+}
+
+.pv-image-selector-grid::-webkit-scrollbar-thumb:hover {
+    background: #8c8f94;
+}
+
+/* ================================
+   Selector Image Item
+   ================================ */
+.pv-selector-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+    display: block;
+}
+
+.pv-selector-image:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.pv-selector-image.pv-image-selected {
+    border-color: #2271b1;
+    box-shadow: 0 4px 12px rgba(34, 113, 177, 0.3);
+}
+
+.pv-selector-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ================================
+   Overlay & Checkbox
+   ================================ */
+.pv-selector-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pv-selector-image:hover .pv-selector-overlay,
+.pv-selector-image.pv-image-selected .pv-selector-overlay {
+    opacity: 1;
+}
+
+.pv-selector-checkbox {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    transition: all 0.2s ease;
+}
+
+.pv-selector-checkbox .dashicons {
+    color: #2271b1;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pv-selector-checkbox.checked {
+    background: #2271b1;
+    border-color: #2271b1;
+}
+
+.pv-selector-checkbox.checked .dashicons {
+    color: #fff;
+    opacity: 1;
+}
+
+.pv-selector-image:hover .pv-selector-checkbox {
+    transform: scale(1.1);
+}
+
+/* ================================
+   Image Title
+   ================================ */
+.pv-selector-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: #fff;
+    padding: 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ================================
+   Pagination
+   ================================ */
+.pv-image-selector-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-top: 1px solid #dcdcde;
+    margin-bottom: 20px;
+}
+
+.pv-image-selector-pagination .button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pv-image-selector-pagination .button .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+#pv-page-info {
+    font-size: 14px;
+    color: #646970;
+    font-weight: 500;
+}
+
+/* ================================
+   Loading & Empty States
+   ================================ */
+.pv-image-selector-grid .pv-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    width: 100%;
+}
+
+.pv-image-selector-grid .pv-loading p {
+    margin-top: 12px;
+    color: #646970;
+}
+
+.pv-image-selector-grid .pv-empty-state,
+.pv-image-selector-grid .pv-error-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #646970;
+    width: 100%;
+}
+
+/* ================================
+   Modal Actions Override
+   ================================ */
+.pv-image-selector-content .pv-modal-actions {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+#pv-add-selected-images .dashicons {
+    margin-right: 4px;
+}
+
+#pv-add-selected-images:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+@media (max-width: 768px) {
+    .pv-image-selector-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .pv-image-selector-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        max-height: 400px;
+    }
+    
+    .pv-image-selector-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .pv-search-input {
+        max-width: 100%;
+    }
+    
+    .pv-image-selector-stats {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .pv-image-selector-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
+    
+    .pv-image-selector-pagination {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .pv-image-selector-pagination .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/**
+ * PhotoVault - Album Sharing Styles (Complete & Enhanced)
+ * Add this to your albums.css or create separate share.css
+ */
+
+/* ================================
+   Share Modal
+   ================================ */
+.pv-share-modal-content {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pv-share-modal-content h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 20px 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.pv-share-modal-content h2 .dashicons {
+    color: #2271b1;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+/* ================================
+   Item Name Display
+   ================================ */
+.pv-share-item-name {
+    background: #f0f6fc;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    border-left: 3px solid #2271b1;
+}
+
+.pv-share-item-name strong {
+    color: #1d2327;
+    margin-right: 8px;
+    font-weight: 600;
+}
+
+.pv-share-item-name span {
+    color: #2271b1;
+    font-weight: 500;
+}
+
+/* ================================
+   Section Headers
+   ================================ */
+.pv-share-add-section,
+.pv-share-existing-section {
+    margin-bottom: 24px;
+}
+
+.pv-share-add-section h3,
+.pv-share-existing-section h3 {
+    font-size: 15px;
+    margin: 0 0 12px 0;
+    color: #1d2327;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-size: 13px;
+    color: #646970;
+}
+
+/* ================================
+   Search Input
+   ================================ */
+.pv-share-search-wrapper {
+    position: relative;
+}
+
+#pv-share-user-search {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #dcdcde;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+#pv-share-user-search:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+#pv-share-user-search::placeholder {
+    color: #8c8f94;
+}
+
+/* ================================
+   User Search Results Dropdown
+   ================================ */
+.pv-share-user-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 280px;
+    overflow-y: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    display: none;
+}
+
+.pv-share-user-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pv-share-user-results::-webkit-scrollbar-track {
+    background: #f0f0f1;
+}
+
+.pv-share-user-results::-webkit-scrollbar-thumb {
+    background: #c3c4c7;
+    border-radius: 4px;
+}
+
+.pv-share-user-results::-webkit-scrollbar-thumb:hover {
+    background: #8c8f94;
+}
+
+/* ================================
+   User Search Result Item
+   ================================ */
+.pv-share-user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.pv-share-user-item:last-child {
+    border-bottom: none;
+}
+
+.pv-share-user-item:hover {
+    background: #f6f7f7;
+}
+
+.pv-share-user-item:active {
+    background: #e8eaeb;
+}
+
+.pv-share-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pv-share-user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.pv-share-user-avatar .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.pv-share-user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.pv-share-user-name {
+    font-weight: 500;
+    color: #1d2327;
+    margin-bottom: 3px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pv-share-user-email {
+    font-size: 12px;
+    color: #646970;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pv-share-add-icon {
+    color: #2271b1;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.pv-share-user-item:hover .pv-share-add-icon {
+    transform: scale(1.1);
+}
+
+.pv-share-add-icon .dashicons {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+}
+
+/* ================================
+   No Results State
+   ================================ */
+.pv-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #646970;
+    font-size: 14px;
+}
+
+/* ================================
+   Existing Shares List
+   ================================ */
+.pv-share-existing-list {
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    min-height: 120px;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.pv-share-existing-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pv-share-existing-list::-webkit-scrollbar-track {
+    background: #f9f9f9;
+}
+
+.pv-share-existing-list::-webkit-scrollbar-thumb {
+    background: #c3c4c7;
+    border-radius: 4px;
+}
+
+/* ================================
+   Shared User Item (Existing)
+   ================================ */
+.pv-share-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f1;
+    gap: 12px;
+}
+
+.pv-share-item:last-child {
+    border-bottom: none;
+}
+
+.pv-share-item:hover {
+    background: #f9f9f9;
+}
+
+.pv-share-item-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pv-share-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pv-share-item-name {
+    font-weight: 500;
+    color: #1d2327;
+    margin-bottom: 3px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pv-share-item-date {
+    font-size: 12px;
+    color: #646970;
+}
+
+.pv-share-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* ================================
+   Permission Select Dropdown
+   ================================ */
+.pv-share-permission-select {
+    padding: 7px 28px 7px 10px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #1d2327;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="%23646970" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.pv-share-permission-select:hover {
+    border-color: #8c8f94;
+}
+
+.pv-share-permission-select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+/* ================================
+   Remove Button
+   ================================ */
+.pv-share-remove-btn {
+    min-width: auto;
+    padding: 7px 10px;
+    border: 1px solid #dcdcde;
+    background: #fff;
+    color: #646970;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pv-share-remove-btn:hover {
+    background: #dc3232;
+    border-color: #dc3232;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.pv-share-remove-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* ================================
+   Empty State
+   ================================ */
+.pv-no-shares {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    color: #646970;
+    font-size: 14px;
+    text-align: center;
+}
+
+.pv-no-shares::before {
+    content: "\f307";
+    font-family: dashicons;
+    font-size: 48px;
+    color: #c3c4c7;
+    margin-bottom: 12px;
+    display: block;
+}
+
+/* ================================
+   Loading State in List
+   ================================ */
+.pv-share-existing-list .pv-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    color: #646970;
+}
+
+.pv-share-existing-list .pv-loading .spinner {
+    margin-bottom: 8px;
+}
+
+.pv-share-existing-list .pv-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    color: #dc3232;
+    font-size: 14px;
+}
+
+/* ================================
+   Modal Actions
+   ================================ */
+.pv-share-modal-content .pv-modal-actions {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f1;
+}
+
+#pv-close-share-modal {
+    min-width: 100px;
+}
+
+/* ================================
+   Animations
+   ================================ */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pv-share-user-results {
+    animation: slideDown 0.2s ease;
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+@media (max-width: 600px) {
+    .pv-share-modal-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .pv-share-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .pv-share-item-user {
+        width: 100%;
+    }
+    
+    .pv-share-item-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .pv-share-permission-select {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .pv-share-user-avatar {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .pv-share-user-avatar .dashicons {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pv-share-modal-content h2 {
+        font-size: 18px;
+    }
+    
+    .pv-share-item-name {
+        font-size: 13px;
+        padding: 12px 14px;
+    }
+    
+    .pv-share-user-item,
+    .pv-share-item {
+        padding: 12px;
+    }
+    
+    #pv-share-user-search {
+        padding: 10px 14px;
+        font-size: 13px;
     }
 }

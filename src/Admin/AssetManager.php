@@ -39,6 +39,14 @@ class AssetManager {
             [],
             PHOTOVAULT_VERSION
         );
+
+        // Admin CSS
+        wp_enqueue_style(
+            'photovault-admin-share',
+            PHOTOVAULT_PLUGIN_URL . 'assets/css/admin/share.css',
+            [],
+            PHOTOVAULT_VERSION
+        );
         
         if (strpos($hook, 'photovault-albums') !== false) {
             wp_enqueue_style(
@@ -62,6 +70,15 @@ class AssetManager {
         wp_enqueue_script(
             'photovault-admin-main',
             PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/main.js',
+            ['jquery', 'wp-util'],
+            PHOTOVAULT_VERSION,
+            true
+        );
+
+        // Admin JavaScript
+        wp_enqueue_script(
+            'photovault-admin-share',
+            PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/share.js',
             ['jquery', 'wp-util'],
             PHOTOVAULT_VERSION,
             true
