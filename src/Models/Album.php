@@ -1,6 +1,6 @@
 <?php
 /**
- * Album Model - Compatible with existing database schema
+ * Album Model - Works with existing database schema
  *
  * @package PhotoVault
  */
@@ -24,17 +24,42 @@ class Album {
     public function create($data) {
         global $wpdb;
         
-        $defaults = [
-            'created_date' => current_time('mysql'),
-            'modified_date' => current_time('mysql'),
-            'visibility' => 'private',
-            'sort_order' => 'date_desc'
-        ];
+        // Ensure unique slug
+        $slug = isset($data['slug']) ? $data['slug'] : sanitize_title($data['name']);
+        $data['slug'] = $this->generate_unique_slug($slug, $data['user_id']);
         
-        $data = wp_parse_args($data, $defaults);
+        // Insert album (MySQL will auto-set created_date and modified_date)
+        $wpdb->insert($this->table_albums, [
+            'user_id' => $data['user_id'],
+            'name' => $data['name'],
+            'slug' => $data['slug'],
+            'description' => isset($data['description']) ? $data['description'] : '',
+            'visibility' => isset($data['visibility']) ? $data['visibility'] : 'private',
+            'sort_order' => isset($data['sort_order']) ? $data['sort_order'] : 'date_desc'
+        ]);
         
-        $wpdb->insert($this->table_albums, $data);
         return $wpdb->insert_id;
+    }
+    
+    /**
+     * Generate unique slug
+     */
+    private function generate_unique_slug($slug, $user_id, $iteration = 0) {
+        global $wpdb;
+        
+        $test_slug = $iteration > 0 ? $slug . '-' . $iteration : $slug;
+        
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$this->table_albums} 
+             WHERE slug = %s AND user_id = %d",
+            $test_slug, $user_id
+        ));
+        
+        if ($exists) {
+            return $this->generate_unique_slug($slug, $user_id, $iteration + 1);
+        }
+        
+        return $test_slug;
     }
     
     /**
@@ -46,21 +71,26 @@ class Album {
         $where = ['1=1'];
         $values = [];
         
-        // Filter by user
         if (isset($params['user_id'])) {
             $where[] = 'a.user_id = %d';
             $values[] = $params['user_id'];
         }
         
-        // Filter by visibility
         if (isset($params['visibility'])) {
             $where[] = 'a.visibility = %s';
             $values[] = $params['visibility'];
         }
         
-        $where_clause = implode(' AND ', $where);
+        if (isset($params['search'])) {
+            $where[] = '(a.name LIKE %s OR a.description LIKE %s)';
+            $search = '%' . $wpdb->esc_like($params['search']) . '%';
+            $values[] = $search;
+            $values[] = $search;
+        }
         
-        // Get basic album data first
+        $where_clause = implode(' AND ', $where);
+        $order_by = isset($params['order_by']) ? $params['order_by'] : 'a.created_date DESC';
+        
         $query = "SELECT 
             a.id,
             a.user_id,
@@ -73,12 +103,21 @@ class Album {
             a.created_date,
             a.modified_date,
             COUNT(DISTINCT ia.image_id) as image_count,
-            DATE_FORMAT(a.created_date, '%%M %%d, %%Y') as created_at
+            DATE_FORMAT(a.created_date, '%%M %%d, %%Y') as created_at,
+            DATE_FORMAT(a.modified_date, '%%M %%d, %%Y') as modified_at
         FROM {$this->table_albums} a
         LEFT JOIN {$this->table_image_album} ia ON a.id = ia.album_id
         WHERE {$where_clause}
         GROUP BY a.id
-        ORDER BY a.created_date DESC";
+        ORDER BY {$order_by}";
+        
+        if (isset($params['limit'])) {
+            $query .= $wpdb->prepare(" LIMIT %d", $params['limit']);
+        }
+        
+        if (isset($params['offset'])) {
+            $query .= $wpdb->prepare(" OFFSET %d", $params['offset']);
+        }
         
         if (!empty($values)) {
             $query = $wpdb->prepare($query, $values);
@@ -86,7 +125,6 @@ class Album {
         
         $results = $wpdb->get_results($query);
         
-        // Process each album to get proper cover image URL
         if ($results) {
             foreach ($results as $album) {
                 $album->image_count = (int) $album->image_count;
@@ -95,6 +133,19 @@ class Album {
         }
         
         return $results;
+    }
+    
+    /**
+     * Search albums
+     */
+    public function search_albums($search_term, $user_id = null) {
+        $params = ['search' => $search_term];
+        
+        if ($user_id) {
+            $params['user_id'] = $user_id;
+        }
+        
+        return $this->get_albums($params);
     }
     
     /**
@@ -126,9 +177,7 @@ class Album {
             ));
         }
         
-        // If we have an attachment ID, get the thumbnail URL
         if ($attachment_id) {
-            // Try to get WordPress attachment URL first
             $wp_image_url = wp_get_attachment_image_url($attachment_id, 'medium');
             if ($wp_image_url) {
                 return $wp_image_url;
@@ -139,7 +188,6 @@ class Album {
             return $upload_dir['baseurl'] . '/photovault/thumbnails/' . $attachment_id . '.jpg';
         }
         
-        // Return null if no image found (will use default in JavaScript)
         return null;
     }
     
@@ -149,12 +197,12 @@ class Album {
     public function get_album_details($album_id) {
         global $wpdb;
         
-        // Get album data with image count
         $album = $wpdb->get_row($wpdb->prepare(
             "SELECT 
                 a.*,
                 COUNT(DISTINCT ia.image_id) as image_count,
-                DATE_FORMAT(a.created_date, '%%M %%d, %%Y at %%h:%%i %%p') as created_at
+                DATE_FORMAT(a.created_date, '%%M %%d, %%Y at %%h:%%i %%p') as created_at,
+                DATE_FORMAT(a.modified_date, '%%M %%d, %%Y at %%h:%%i %%p') as modified_at
             FROM {$this->table_albums} a
             LEFT JOIN {$this->table_image_album} ia ON a.id = ia.album_id
             WHERE a.id = %d
@@ -166,53 +214,8 @@ class Album {
             return null;
         }
         
-        // Get album images with their details
-        $images_data = $wpdb->get_results($wpdb->prepare(
-            "SELECT 
-                i.id,
-                i.attachment_id,
-                i.title,
-                i.description,
-                ia.position,
-                ia.added_date,
-                (a.cover_image_id = i.id) as is_cover
-            FROM {$this->table_image_album} ia
-            LEFT JOIN {$this->table_images} i ON ia.image_id = i.id
-            LEFT JOIN {$this->table_albums} a ON ia.album_id = a.id
-            WHERE ia.album_id = %d
-            ORDER BY ia.position ASC, ia.added_date DESC",
-            $album_id
-        ));
-        
-        // Process images to get proper URLs
-        $images = [];
-        if ($images_data) {
-            foreach ($images_data as $img) {
-                // Try to get WordPress attachment URLs first
-                $thumbnail_url = wp_get_attachment_image_url($img->attachment_id, 'medium');
-                $full_url = wp_get_attachment_image_url($img->attachment_id, 'large');
-                
-                // Fallback to custom paths if WordPress attachment not found
-                if (!$thumbnail_url) {
-                    $upload_dir = wp_upload_dir();
-                    $thumbnail_url = $upload_dir['baseurl'] . '/photovault/thumbnails/' . $img->attachment_id . '.jpg';
-                    $full_url = $upload_dir['baseurl'] . '/photovault/original/' . $img->attachment_id . '.jpg';
-                }
-                
-                $images[] = (object) [
-                    'id' => $img->id,
-                    'attachment_id' => $img->attachment_id,
-                    'title' => $img->title ?: 'Untitled',
-                    'description' => $img->description,
-                    'thumbnail_url' => $thumbnail_url,
-                    'image_url' => $full_url,
-                    'position' => $img->position,
-                    'is_cover' => (bool) $img->is_cover
-                ];
-            }
-        }
-        
-        $album->images = $images;
+        $album->image_count = (int) $album->image_count;
+        $album->cover_image_url = $this->get_album_cover_url($album_id, $album->cover_image_id);
         
         return $album;
     }
@@ -223,10 +226,19 @@ class Album {
     public function update($id, $data) {
         global $wpdb;
         
-        $data['modified_date'] = current_time('mysql');
+        // MySQL will auto-update modified_date via ON UPDATE CURRENT_TIMESTAMP
         
         if (isset($data['name'])) {
-            $data['slug'] = sanitize_title($data['name']);
+            $current_album = $wpdb->get_row($wpdb->prepare(
+                "SELECT slug, user_id FROM {$this->table_albums} WHERE id = %d",
+                $id
+            ));
+            
+            $new_slug = sanitize_title($data['name']);
+            
+            if ($current_album && $new_slug !== $current_album->slug) {
+                $data['slug'] = $this->generate_unique_slug($new_slug, $current_album->user_id);
+            }
         }
         
         return $wpdb->update($this->table_albums, $data, ['id' => $id]);
@@ -265,7 +277,7 @@ class Album {
     public function add_image($album_id, $image_id, $position = 0) {
         global $wpdb;
         
-        // Check if image already exists in album
+        // Check if already exists
         $exists = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$this->table_image_album} 
              WHERE album_id = %d AND image_id = %d",
@@ -276,7 +288,7 @@ class Album {
             return false;
         }
         
-        // If no position specified, add to end
+        // Get next position if not specified
         if ($position == 0) {
             $max_position = $wpdb->get_var($wpdb->prepare(
                 "SELECT MAX(position) FROM {$this->table_image_album} WHERE album_id = %d",
@@ -285,11 +297,11 @@ class Album {
             $position = ($max_position ?: 0) + 1;
         }
         
+        // Insert relationship (MySQL auto-sets added_date)
         $result = $wpdb->insert($this->table_image_album, [
             'album_id' => $album_id,
             'image_id' => $image_id,
-            'position' => $position,
-            'added_date' => current_time('mysql')
+            'position' => $position
         ]);
         
         // If this is the first image, set it as cover
@@ -365,7 +377,7 @@ class Album {
         
         return $wpdb->update(
             $this->table_albums,
-            ['cover_image_id' => $image_id, 'modified_date' => current_time('mysql')],
+            ['cover_image_id' => $image_id],
             ['id' => $album_id]
         );
     }
@@ -402,5 +414,161 @@ class Album {
         }
         
         return $wpdb->get_row($wpdb->prepare($query, $params));
+    }
+    
+    /**
+     * Duplicate album
+     */
+    public function duplicate($album_id) {
+        global $wpdb;
+        
+        $album = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$this->table_albums} WHERE id = %d",
+            $album_id
+        ));
+        
+        if (!$album) {
+            return false;
+        }
+        
+        // Create new album
+        $new_slug = $this->generate_unique_slug($album->slug . '-copy', $album->user_id);
+        
+        $wpdb->insert($this->table_albums, [
+            'user_id' => $album->user_id,
+            'name' => $album->name . ' (Copy)',
+            'slug' => $new_slug,
+            'description' => $album->description,
+            'visibility' => $album->visibility,
+            'sort_order' => $album->sort_order
+        ]);
+        
+        $new_album_id = $wpdb->insert_id;
+        
+        if (!$new_album_id) {
+            return false;
+        }
+        
+        // Copy all images with their positions
+        $images = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$this->table_image_album} WHERE album_id = %d",
+            $album_id
+        ));
+        
+        if ($images) {
+            foreach ($images as $image) {
+                $wpdb->insert($this->table_image_album, [
+                    'album_id' => $new_album_id,
+                    'image_id' => $image->image_id,
+                    'position' => $image->position
+                ]);
+            }
+            
+            // Set cover image if original had one
+            if ($album->cover_image_id) {
+                $wpdb->update(
+                    $this->table_albums,
+                    ['cover_image_id' => $album->cover_image_id],
+                    ['id' => $new_album_id]
+                );
+            }
+        }
+        
+        return $new_album_id;
+    }
+    
+    /**
+     * Get user statistics
+     */
+    public function get_user_stats($user_id) {
+        global $wpdb;
+        
+        $total_albums = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$this->table_albums} WHERE user_id = %d",
+            $user_id
+        ));
+        
+        $total_images_in_albums = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(DISTINCT ia.image_id)
+             FROM {$this->table_image_album} ia
+             LEFT JOIN {$this->table_albums} a ON ia.album_id = a.id
+             WHERE a.user_id = %d",
+            $user_id
+        ));
+        
+        $visibility_breakdown = $wpdb->get_results($wpdb->prepare(
+            "SELECT visibility, COUNT(*) as count
+             FROM {$this->table_albums}
+             WHERE user_id = %d
+             GROUP BY visibility",
+            $user_id
+        ), OBJECT_K);
+        
+        $recent_albums = $wpdb->get_results($wpdb->prepare(
+            "SELECT id, name, created_date
+             FROM {$this->table_albums}
+             WHERE user_id = %d
+             ORDER BY created_date DESC
+             LIMIT 5",
+            $user_id
+        ));
+        
+        return [
+            'total_albums' => (int) $total_albums,
+            'total_images_in_albums' => (int) $total_images_in_albums,
+            'private_albums' => isset($visibility_breakdown['private']) ? (int) $visibility_breakdown['private']->count : 0,
+            'shared_albums' => isset($visibility_breakdown['shared']) ? (int) $visibility_breakdown['shared']->count : 0,
+            'public_albums' => isset($visibility_breakdown['public']) ? (int) $visibility_breakdown['public']->count : 0,
+            'recent_albums' => $recent_albums
+        ];
+    }
+    
+    /**
+     * Get albums by multiple IDs
+     */
+    public function get_by_ids($album_ids) {
+        global $wpdb;
+        
+        if (empty($album_ids)) {
+            return [];
+        }
+        
+        $placeholders = implode(',', array_fill(0, count($album_ids), '%d'));
+        
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$this->table_albums} WHERE id IN ({$placeholders})",
+            $album_ids
+        ));
+    }
+    
+    /**
+     * Bulk delete albums
+     */
+    public function bulk_delete($album_ids, $user_id) {
+        global $wpdb;
+        
+        if (empty($album_ids)) {
+            return false;
+        }
+        
+        $placeholders = implode(',', array_fill(0, count($album_ids), '%d'));
+        $params = array_merge($album_ids, [$user_id]);
+        
+        // Delete relationships
+        $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$this->table_image_album} 
+             WHERE album_id IN (
+                 SELECT id FROM {$this->table_albums} 
+                 WHERE id IN ({$placeholders}) AND user_id = %d
+             )",
+            $params
+        ));
+        
+        // Delete albums
+        return $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$this->table_albums} 
+             WHERE id IN ({$placeholders}) AND user_id = %d",
+            $params
+        ));
     }
 }
