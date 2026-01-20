@@ -36,6 +36,7 @@ class AlbumController {
         add_action('wp_ajax_pv_duplicate_album', [$this, 'duplicate_album']);
         add_action('wp_ajax_pv_search_albums', [$this, 'search_albums']);
         add_action('wp_ajax_pv_get_album_stats', [$this, 'get_album_stats']);
+        add_action('wp_ajax_pv_get_available_images', [$this, 'get_available_images']);
     }
     
     /**
@@ -635,6 +636,110 @@ class AlbumController {
         } catch (Exception $e) {
             error_log('PhotoVault Get Stats Error: ' . $e->getMessage());
             wp_send_json_error(['message' => __('Error loading statistics', 'photovault')], 500);
+        }
+    }
+
+ 
+
+    /**
+     * Get available images for album (not already in album)
+     * Add this to the register_ajax_actions method:
+     * add_action('wp_ajax_pv_get_available_images', [$this, 'get_available_images']);
+     */
+    public function get_available_images() {
+        try {
+            check_ajax_referer('photovault_nonce', 'nonce');
+            
+            $album_id = intval($_POST['album_id'] ?? 0);
+            $page = intval($_POST['page'] ?? 1);
+            $per_page = intval($_POST['per_page'] ?? 20);
+            $search = sanitize_text_field($_POST['search'] ?? '');
+            
+            if (!$album_id) {
+                wp_send_json_error(['message' => __('Invalid album ID', 'photovault')], 400);
+            }
+            
+            // Verify user owns the album
+            if (!$this->validate_album_access($album_id)) {
+                wp_send_json_error(['message' => __('Insufficient permissions', 'photovault')], 403);
+            }
+            
+            global $wpdb;
+            $table_images = $wpdb->prefix . 'pv_images';
+            $table_image_album = $wpdb->prefix . 'pv_image_album';
+            
+            $user_id = get_current_user_id();
+            $offset = ($page - 1) * $per_page;
+            
+            // Build WHERE clause
+            $where = ['i.user_id = %d'];
+            $values = [$user_id];
+            
+            // Exclude images already in this album
+            $where[] = 'i.id NOT IN (
+                SELECT image_id 
+                FROM ' . $table_image_album . ' 
+                WHERE album_id = %d
+            )';
+            $values[] = $album_id;
+            
+            // Add search condition if provided
+            if (!empty($search)) {
+                $where[] = '(i.title LIKE %s OR i.description LIKE %s)';
+                $search_term = '%' . $wpdb->esc_like($search) . '%';
+                $values[] = $search_term;
+                $values[] = $search_term;
+            }
+            
+            $where_clause = implode(' AND ', $where);
+            
+            // Get total count
+            $count_query = "SELECT COUNT(*) 
+                           FROM {$table_images} i
+                           WHERE {$where_clause}";
+            
+            $total = $wpdb->get_var($wpdb->prepare($count_query, $values));
+            
+            // Get images for current page
+            $images_query = "SELECT 
+                i.id,
+                i.attachment_id,
+                i.title,
+                i.description,
+                i.upload_date
+            FROM {$table_images} i
+            WHERE {$where_clause}
+            ORDER BY i.upload_date DESC
+            LIMIT %d OFFSET %d";
+            
+            $query_values = array_merge($values, [$per_page, $offset]);
+            $images_data = $wpdb->get_results($wpdb->prepare($images_query, $query_values));
+            
+            $images = [];
+            if ($images_data) {
+                foreach ($images_data as $img) {
+                    $images[] = [
+                        'id' => (int) $img->id,
+                        'attachment_id' => (int) $img->attachment_id,
+                        'title' => $img->title ?: __('Untitled', 'photovault'),
+                        'description' => $img->description,
+                        'thumbnail_url' => $this->get_image_url($img->attachment_id, 'thumbnail'),
+                        'medium_url' => $this->get_image_url($img->attachment_id, 'medium')
+                    ];
+                }
+            }
+            
+            wp_send_json_success([
+                'images' => $images,
+                'total' => (int) $total,
+                'page' => $page,
+                'per_page' => $per_page,
+                'total_pages' => ceil($total / $per_page)
+            ]);
+            
+        } catch (Exception $e) {
+            error_log('PhotoVault Get Available Images Error: ' . $e->getMessage());
+            wp_send_json_error(['message' => __('Error loading images', 'photovault')], 500);
         }
     }
 }

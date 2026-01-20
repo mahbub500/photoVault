@@ -136,3 +136,315 @@
     color: #46b450;
     font-size: 20px;
 }
+
+/**
+ * PhotoVault - Image Selector Styles
+ * Add this to your albums.css file
+ */
+
+/* ================================
+   Image Selector Modal
+   ================================ */
+.pv-image-selector-content {
+    max-width: 1000px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.pv-image-selector-content h2 {
+    margin: 0 0 20px 0;
+}
+
+/* ================================
+   Toolbar
+   ================================ */
+.pv-image-selector-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.pv-search-input {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 16px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.pv-search-input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.pv-image-selector-stats {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1d2327;
+}
+
+#pv-selected-count {
+    padding: 6px 12px;
+    background: #f0f0f1;
+    border-radius: 4px;
+}
+
+/* ================================
+   Image Grid
+   ================================ */
+.pv-image-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    background: #f9f9f9;
+}
+
+/* Custom scrollbar for grid */
+.pv-image-selector-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pv-image-selector-grid::-webkit-scrollbar-track {
+    background: #f0f0f1;
+    border-radius: 4px;
+}
+
+.pv-image-selector-grid::-webkit-scrollbar-thumb {
+    background: #c3c4c7;
+    border-radius: 4px;
+}
+
+.pv-image-selector-grid::-webkit-scrollbar-thumb:hover {
+    background: #8c8f94;
+}
+
+/* ================================
+   Selector Image Item
+   ================================ */
+.pv-selector-image {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.pv-selector-image:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.pv-selector-image.pv-image-selected {
+    border-color: #2271b1;
+    box-shadow: 0 4px 12px rgba(34, 113, 177, 0.3);
+}
+
+.pv-selector-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ================================
+   Overlay & Checkbox
+   ================================ */
+.pv-selector-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pv-selector-image:hover .pv-selector-overlay,
+.pv-selector-image.pv-image-selected .pv-selector-overlay {
+    opacity: 1;
+}
+
+.pv-selector-checkbox {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    transition: all 0.2s ease;
+}
+
+.pv-selector-checkbox .dashicons {
+    color: #2271b1;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pv-selector-checkbox.checked {
+    background: #2271b1;
+    border-color: #2271b1;
+}
+
+.pv-selector-checkbox.checked .dashicons {
+    color: #fff;
+    opacity: 1;
+}
+
+.pv-selector-image:hover .pv-selector-checkbox {
+    transform: scale(1.1);
+}
+
+/* ================================
+   Image Title
+   ================================ */
+.pv-selector-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: #fff;
+    padding: 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ================================
+   Pagination
+   ================================ */
+.pv-image-selector-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-top: 1px solid #dcdcde;
+    margin-bottom: 20px;
+}
+
+.pv-image-selector-pagination .button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pv-image-selector-pagination .button .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+#pv-page-info {
+    font-size: 14px;
+    color: #646970;
+    font-weight: 500;
+}
+
+/* ================================
+   Loading & Empty States
+   ================================ */
+.pv-image-selector-grid .pv-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.pv-image-selector-grid .pv-loading p {
+    margin-top: 12px;
+    color: #646970;
+}
+
+.pv-image-selector-grid .pv-empty-state,
+.pv-image-selector-grid .pv-error-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #646970;
+}
+
+/* ================================
+   Modal Actions Override
+   ================================ */
+.pv-image-selector-content .pv-modal-actions {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+#pv-add-selected-images .dashicons {
+    margin-right: 4px;
+}
+
+#pv-add-selected-images:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+@media (max-width: 768px) {
+    .pv-image-selector-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .pv-image-selector-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        max-height: 400px;
+    }
+    
+    .pv-image-selector-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .pv-search-input {
+        max-width: 100%;
+    }
+    
+    .pv-image-selector-stats {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .pv-image-selector-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
+    
+    .pv-image-selector-pagination {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .pv-image-selector-pagination .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
