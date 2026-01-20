@@ -16,7 +16,7 @@ use PhotoVault\Admin\MenuManager;
 use PhotoVault\Admin\AssetManager;
 use PhotoVault\Admin\SettingsManager;
 use PhotoVault\Admin\TagManager;
-use PhotoVault\Controllers\ImageController;
+use PhotoVault\Controllers\GallaryController;
 use PhotoVault\Controllers\AlbumController;
 use PhotoVault\Controllers\TagController;
 use PhotoVault\Controllers\ShareController;
@@ -90,7 +90,7 @@ class Plugin {
      * Initialize all controllers
      */
     private function init_controllers() {
-        $this->image_controller     = new ImageController();
+        $this->image_controller     = new GallaryController();
         $this->album_controller     = new AlbumController();
         
         $this->share_controller     = new ShareController();
@@ -122,10 +122,22 @@ class Plugin {
      */
     private function register_ajax_hooks() {
         // Image operations
+        // add_action('wp_ajax_pv_upload_image', [$this->image_controller, 'upload']);
+        // add_action('wp_ajax_pv_get_images', [$this->image_controller, 'get_images']);
+        // add_action('wp_ajax_pv_delete_image', [$this->image_controller, 'delete']);
+        // add_action('wp_ajax_pv_update_image', [$this->image_controller, 'update']);
+
         add_action('wp_ajax_pv_upload_image', [$this->image_controller, 'upload']);
         add_action('wp_ajax_pv_get_images', [$this->image_controller, 'get_images']);
-        add_action('wp_ajax_pv_delete_image', [$this->image_controller, 'delete']);
+        add_action('wp_ajax_pv_get_image', [$this->image_controller, 'get_image']);
         add_action('wp_ajax_pv_update_image', [$this->image_controller, 'update']);
+        add_action('wp_ajax_pv_delete_image', [$this->image_controller, 'delete']);
+        add_action('wp_ajax_pv_bulk_delete', [$this->image_controller, 'bulk_delete']);
+        add_action('wp_ajax_pv_add_to_album', [$this->image_controller, 'add_to_album']);
+        add_action('wp_ajax_pv_get_stats', [$this->image_controller, 'get_stats']);
+        add_action('wp_ajax_pv_get_tags', [$this->image_controller, 'get_tags']);
+        add_action('wp_ajax_pv_add_image_tag', [$this->image_controller, 'add_image_tag']);
+        add_action('wp_ajax_pv_get_image_details', [$this->image_controller, 'get_image']);
         
         // Album operations
         add_action('wp_ajax_pv_create_album', [$this->album_controller, 'create']);
@@ -167,7 +179,7 @@ class Plugin {
     /**
      * Get image controller
      *
-     * @return ImageController
+     * @return GallaryController
      */
     public function get_image_controller() {
         return $this->image_controller;

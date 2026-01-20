@@ -31,7 +31,7 @@ photovault/
 │   │   └── Deactivator.php                # Deactivation handler
 │   │
 │   ├── Controllers/                       # AJAX/Request handlers
-│   │   ├── ImageController.php            # Image operations
+│   │   ├── GallaryController.php            # Image operations
 │   │   ├── AlbumController.php            # Album operations
 │   │   ├── TagController.php              # Tag operations
 │   │   ├── ShareController.php            # Sharing operations
@@ -188,7 +188,7 @@ Go to WordPress Admin → Plugins → Activate "PhotoVault"
 
 ### Controllers
 
-#### `src/Controllers/ImageController.php`
+#### `src/Controllers/GallaryController.php`
 - **upload()** - Handle image upload with chunking
 - **get_images()** - Retrieve images with filters
 - **update()** - Update image metadata
