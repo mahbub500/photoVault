@@ -1,6 +1,6 @@
 <?php
 /**
- * PhotoVault - Albums Admin Page Template
+ * PhotoVault - Albums Admin Page Template with Cover Image Upload
  * File: templates/admin-albums.php
  */
 if (!defined('ABSPATH')) {
@@ -35,7 +35,7 @@ if (!defined('ABSPATH')) {
     </div>
 </div>
 
-<!-- Create/Edit Album Modal -->
+<!-- Create/Edit Album Modal with Cover Image Upload -->
 <div id="pv-album-modal" class="pv-modal" style="display:none;">
     <div class="pv-modal-content">
         <span class="pv-modal-close">&times;</span>
@@ -43,6 +43,35 @@ if (!defined('ABSPATH')) {
             <?php esc_html_e('Create New Album', 'photovault'); ?>
         </h2>
         
+        <!-- Cover Image Upload Section -->
+        <div class="pv-form-field pv-cover-upload-section">
+            <label><?php esc_html_e('Album Cover Image', 'photovault'); ?></label>
+            
+            <div id="pv-cover-preview-container" class="pv-cover-preview-container" style="display:none;">
+                <img id="pv-cover-preview" src="" alt="Album cover">
+                <button type="button" class="pv-remove-cover" id="pv-remove-cover-btn">
+                    <span class="dashicons dashicons-no-alt"></span>
+                </button>
+            </div>
+            
+            <div id="pv-cover-upload-area" class="pv-cover-upload-area">
+                <div class="pv-upload-placeholder">
+                    <span class="dashicons dashicons-format-image"></span>
+                    <p><?php esc_html_e('Click to upload or drag and drop', 'photovault'); ?></p>
+                    <span class="pv-upload-hint">
+                        <?php esc_html_e('JPG, PNG, GIF or WebP (Max 5MB)', 'photovault'); ?>
+                    </span>
+                </div>
+                <input 
+                    type="file" 
+                    id="pv-cover-image-input" 
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    style="display:none;"
+                >
+                <input type="hidden" id="pv-cover-attachment-id" value="">
+            </div>
+        </div>
+
         <div class="pv-form-field">
             <label for="pv-album-name">
                 <?php esc_html_e('Album Name', 'photovault'); ?> 
