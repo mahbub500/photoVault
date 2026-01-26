@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Activator
+ * Plugin Activator - Updated with Video Support
  *
  * @package PhotoVault
  */
@@ -54,6 +54,30 @@ class Activator {
             KEY visibility (visibility)
         ) $charset_collate;";
         
+        // Videos table
+        $table_videos = $wpdb->prefix . 'pv_videos';
+        $sql_videos = "CREATE TABLE $table_videos (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            attachment_id bigint(20) NOT NULL,
+            user_id bigint(20) NOT NULL,
+            title varchar(255) DEFAULT '',
+            description text,
+            upload_date datetime DEFAULT CURRENT_TIMESTAMP,
+            modified_date datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            visibility varchar(20) DEFAULT 'private',
+            file_size bigint(20) DEFAULT 0,
+            width int(11) DEFAULT 0,
+            height int(11) DEFAULT 0,
+            duration int(11) DEFAULT 0,
+            mime_type varchar(100) DEFAULT '',
+            thumbnail_attachment_id bigint(20) DEFAULT 0,
+            PRIMARY KEY (id),
+            KEY user_id (user_id),
+            KEY attachment_id (attachment_id),
+            KEY upload_date (upload_date),
+            KEY visibility (visibility)
+        ) $charset_collate;";
+        
         // Albums table
         $table_albums = $wpdb->prefix . 'pv_albums';
         $sql_albums = "CREATE TABLE $table_albums (
@@ -98,6 +122,18 @@ class Activator {
             KEY position (position)
         ) $charset_collate;";
         
+        // Video-Album relationship
+        $table_video_album = $wpdb->prefix . 'pv_video_album';
+        $sql_video_album = "CREATE TABLE $table_video_album (
+            video_id bigint(20) NOT NULL,
+            album_id bigint(20) NOT NULL,
+            position int(11) DEFAULT 0,
+            added_date datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (video_id, album_id),
+            KEY album_id (album_id),
+            KEY position (position)
+        ) $charset_collate;";
+        
         // Image-Tag relationship
         $table_image_tag = $wpdb->prefix . 'pv_image_tag';
         $sql_image_tag = "CREATE TABLE $table_image_tag (
@@ -105,6 +141,16 @@ class Activator {
             tag_id bigint(20) NOT NULL,
             added_date datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (image_id, tag_id),
+            KEY tag_id (tag_id)
+        ) $charset_collate;";
+        
+        // Video-Tag relationship
+        $table_video_tag = $wpdb->prefix . 'pv_video_tag';
+        $sql_video_tag = "CREATE TABLE $table_video_tag (
+            video_id bigint(20) NOT NULL,
+            tag_id bigint(20) NOT NULL,
+            added_date datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (video_id, tag_id),
             KEY tag_id (tag_id)
         ) $charset_collate;";
         
@@ -132,21 +178,26 @@ class Activator {
             user_id bigint(20) NOT NULL,
             filename varchar(255) NOT NULL,
             file_path varchar(500) NOT NULL,
+            file_type varchar(20) DEFAULT 'image',
             status varchar(20) DEFAULT 'pending',
             error_message text,
             created_date datetime DEFAULT CURRENT_TIMESTAMP,
             processed_date datetime DEFAULT NULL,
             PRIMARY KEY (id),
             KEY user_id (user_id),
-            KEY status (status)
+            KEY status (status),
+            KEY file_type (file_type)
         ) $charset_collate;";
         
         // Create all tables
         dbDelta($sql_images);
+        dbDelta($sql_videos);
         dbDelta($sql_albums);
         dbDelta($sql_tags);
         dbDelta($sql_image_album);
+        dbDelta($sql_video_album);
         dbDelta($sql_image_tag);
+        dbDelta($sql_video_tag);
         dbDelta($sql_shares);
         dbDelta($sql_upload_queue);
         
@@ -164,10 +215,15 @@ class Activator {
         if (!file_exists($photovault_dir)) {
             wp_mkdir_p($photovault_dir);
             
-            // Create subdirectories
+            // Create subdirectories for images
             wp_mkdir_p($photovault_dir . '/thumbnails');
             wp_mkdir_p($photovault_dir . '/original');
             wp_mkdir_p($photovault_dir . '/temp');
+            
+            // Create subdirectories for videos
+            wp_mkdir_p($photovault_dir . '/videos');
+            wp_mkdir_p($photovault_dir . '/video-thumbnails');
+            wp_mkdir_p($photovault_dir . '/video-temp');
             
             // Add .htaccess for security
             $htaccess_content = "Options -Indexes\n";
@@ -178,10 +234,14 @@ class Activator {
             file_put_contents($photovault_dir . '/.htaccess', $htaccess_content);
             
             // Add index.php to prevent directory listing
-            file_put_contents($photovault_dir . '/index.php', '<?php // Silence is golden');
-            file_put_contents($photovault_dir . '/thumbnails/index.php', '<?php // Silence is golden');
-            file_put_contents($photovault_dir . '/original/index.php', '<?php // Silence is golden');
-            file_put_contents($photovault_dir . '/temp/index.php', '<?php // Silence is golden');
+            $index_content = '<?php // Silence is golden';
+            file_put_contents($photovault_dir . '/index.php', $index_content);
+            file_put_contents($photovault_dir . '/thumbnails/index.php', $index_content);
+            file_put_contents($photovault_dir . '/original/index.php', $index_content);
+            file_put_contents($photovault_dir . '/temp/index.php', $index_content);
+            file_put_contents($photovault_dir . '/videos/index.php', $index_content);
+            file_put_contents($photovault_dir . '/video-thumbnails/index.php', $index_content);
+            file_put_contents($photovault_dir . '/video-temp/index.php', $index_content);
         }
     }
     
@@ -190,6 +250,7 @@ class Activator {
      */
     private static function set_default_options() {
         $defaults = [
+            // Image settings
             'photovault_max_upload_size' => 10485760, // 10MB
             'photovault_allowed_types' => ['jpg', 'jpeg', 'png', 'gif', 'webp'],
             'photovault_thumbnail_width' => 300,
@@ -206,6 +267,14 @@ class Activator {
             'photovault_enable_likes' => false,
             'photovault_image_quality' => 85,
             'photovault_auto_optimize' => true,
+            
+            // Video settings
+            'photovault_max_video_upload_size' => 104857600, // 100MB
+            'photovault_allowed_video_types' => ['mp4', 'mov', 'avi', 'wmv', 'webm'],
+            'photovault_video_thumbnail_width' => 640,
+            'photovault_video_thumbnail_height' => 360,
+            'photovault_enable_video_watermark' => false,
+            'photovault_video_auto_generate_thumbnail' => true,
         ];
         
         foreach ($defaults as $key => $value) {
@@ -229,6 +298,9 @@ class Activator {
             'photovault_upload_images',
             'photovault_edit_images',
             'photovault_delete_images',
+            'photovault_upload_videos',
+            'photovault_edit_videos',
+            'photovault_delete_videos',
             'photovault_manage_albums',
             'photovault_share_items',
         ];
@@ -250,6 +322,9 @@ class Activator {
             $author->add_cap('photovault_upload_images');
             $author->add_cap('photovault_edit_images');
             $author->add_cap('photovault_delete_images');
+            $author->add_cap('photovault_upload_videos');
+            $author->add_cap('photovault_edit_videos');
+            $author->add_cap('photovault_delete_videos');
             $author->add_cap('photovault_manage_albums');
         }
     }

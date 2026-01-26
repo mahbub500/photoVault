@@ -104,6 +104,45 @@ class AssetManager {
             );
         }
 
+        if (str_contains($hook, 'photovault-videos') ) {
+
+            // Frontend CSS
+            wp_enqueue_style(
+                'photovault-videos',
+                PHOTOVAULT_PLUGIN_URL . 'assets/css/admin/videos.css',
+                [],
+                PHOTOVAULT_VERSION
+            );
+            // Frontend JavaScript
+            wp_enqueue_script(
+                'photovault-videos',
+                PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/videos.js',
+                ['jquery'],
+                PHOTOVAULT_VERSION,
+                true
+            );
+
+            // Localize script with data
+            wp_localize_script('photovault-videos', 'photoVaultVideos', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('photovault_nonce'),
+                'max_upload_size' => get_option('photovault_max_video_upload_size', 104857600),
+                'allowed_types' => get_option('photovault_allowed_video_types', ['mp4', 'mov', 'avi', 'wmv', 'webm']),
+                'default_thumbnail' => PHOTOVAULT_PLUGIN_URL . 'assets/images/default-video-thumbnail.png',
+                'i18n' => [
+                    'file_too_large' => __('File size exceeds maximum allowed size.', 'photovault'),
+                    'invalid_file_type' => __('Invalid file type.', 'photovault'),
+                    'upload_success' => __('Video uploaded successfully!', 'photovault'),
+                    'upload_error' => __('Failed to upload video.', 'photovault'),
+                    'delete_confirm' => __('Are you sure you want to delete this video?', 'photovault'),
+                    'delete_success' => __('Video deleted successfully!', 'photovault'),
+                    'delete_error' => __('Failed to delete video.', 'photovault'),
+                    'update_success' => __('Video updated successfully!', 'photovault'),
+                    'update_error' => __('Failed to update video.', 'photovault'),
+                ]
+            ]);
+        }
+
         
         
         if (strpos($hook, 'photovault-timeline') !== false) {

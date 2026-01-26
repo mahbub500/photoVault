@@ -33,26 +33,7 @@ define('PHOTOVAULT_DB_VERSION', '1.0');
  */
 if (file_exists(PHOTOVAULT_PLUGIN_DIR . 'vendor/autoload.php')) {
     require_once PHOTOVAULT_PLUGIN_DIR . 'vendor/autoload.php';
-} else {
-    // Manual PSR-4 autoloader if Composer not available
-    spl_autoload_register(function ($class) {
-        $prefix = 'PhotoVault\\';
-        $base_dir = PHOTOVAULT_PLUGIN_DIR . 'src/';
-        
-        $len = strlen($prefix);
-        if (strncmp($prefix, $class, $len) !== 0) {
-            return;
-        }
-        
-        $relative_class = substr($class, $len);
-        $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-        
-        if (file_exists($file)) {
-            require $file;
-        }
-    });
-}
-
+} 
 // Bootstrap the plugin
 if (class_exists('PhotoVault\\Core\\Plugin')) {
     $photovault = Core\Plugin::get_instance();

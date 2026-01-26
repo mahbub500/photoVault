@@ -45,6 +45,16 @@ class MenuManager {
             [$this, 'render_main_page']               // Callback
         );
         
+        // Videos submenu
+        add_submenu_page(
+            'photovault',
+            __('Videos', 'photovault'),
+            __('Videos', 'photovault'),
+            'upload_files',
+            'photovault-videos',
+            [$this, 'render_videos_page']
+        );
+        
         // Albums submenu
         add_submenu_page(
             'photovault',
@@ -111,6 +121,14 @@ class MenuManager {
             ]
         ]);
         
+        // Videos
+        $wp_admin_bar->add_node([
+            'parent' => 'photovault',
+            'id' => 'photovault-videos',
+            'title' => __('Videos', 'photovault'),
+            'href' => admin_url('admin.php?page=photovault-videos'),
+        ]);
+        
         // Albums
         $wp_admin_bar->add_node([
             'parent' => 'photovault',
@@ -133,6 +151,13 @@ class MenuManager {
      */
     public function render_main_page() {
         $this->render_view('main');
+    }
+    
+    /**
+     * Render videos page
+     */
+    public function render_videos_page() {
+        $this->render_view('videos');
     }
     
     /**

@@ -1,7 +1,7 @@
 <?php
 namespace PhotoVault\Core;
 /**
- * Main Plugin Class
+ * Main Plugin Class - Updated with Video Support
  *
  * @package PhotoVault
  */
@@ -17,6 +17,7 @@ use PhotoVault\Admin\AssetManager;
 use PhotoVault\Admin\SettingsManager;
 use PhotoVault\Admin\TagManager;
 use PhotoVault\Controllers\ImageController;
+use PhotoVault\Controllers\VideoController;
 use PhotoVault\Controllers\AlbumController;
 use PhotoVault\Controllers\TagController;
 use PhotoVault\Controllers\ShareController;
@@ -39,8 +40,9 @@ class Plugin {
      * @var object
      */
     private $image_controller;
+    private $video_controller;
     private $album_controller;
-    
+    private $tag_controller;
     private $share_controller;
     private $timeline_controller;
     private $settings_controller;
@@ -91,8 +93,9 @@ class Plugin {
      */
     private function init_controllers() {
         $this->image_controller     = new ImageController();
+        $this->video_controller     = new VideoController();
         $this->album_controller     = new AlbumController();
-        
+        $this->tag_controller       = new TagController();
         $this->share_controller     = new ShareController();
         $this->timeline_controller  = new TimelineController();
         $this->settings_controller  = new SettingsController();
@@ -108,7 +111,7 @@ class Plugin {
             new TagManager();
             new SettingsManager();
         }
-            new AssetManager();
+        new AssetManager();
         
         // Frontend initialization
         new ShortcodeManager();
@@ -127,28 +130,33 @@ class Plugin {
         add_action('wp_ajax_pv_delete_image', [$this->image_controller, 'delete']);
         add_action('wp_ajax_pv_update_image', [$this->image_controller, 'update']);
         
+        // Video operations
+        add_action('wp_ajax_pv_upload_video', [$this->video_controller, 'upload']);
+        add_action('wp_ajax_pv_get_videos', [$this->video_controller, 'get_videos']);
+        add_action('wp_ajax_pv_delete_video', [$this->video_controller, 'delete']);
+        add_action('wp_ajax_pv_update_video', [$this->video_controller, 'update']);
+        
         // Album operations
         add_action('wp_ajax_pv_create_album', [$this->album_controller, 'create']);
         add_action('wp_ajax_pv_get_albums', [$this->album_controller, 'get_albums']);
         add_action('wp_ajax_pv_update_album', [$this->album_controller, 'update']);
         add_action('wp_ajax_pv_delete_album', [$this->album_controller, 'delete']);
         
-        
+        // Tag operations
+        add_action('wp_ajax_pv_create_tag', [$this->tag_controller, 'create']);
+        add_action('wp_ajax_pv_get_tags', [$this->tag_controller, 'get_tags']);
+        add_action('wp_ajax_pv_update_tag', [$this->tag_controller, 'update']);
+        add_action('wp_ajax_pv_delete_tag', [$this->tag_controller, 'delete']);
         
         // Share operations
         add_action('wp_ajax_pv_share_item', [$this->share_controller, 'share']);
         add_action('wp_ajax_pv_unshare_item', [$this->share_controller, 'unshare']);
         
         // Timeline operations
-        
-        // Get timeline images grouped by date
         add_action('wp_ajax_pv_get_timeline_images', 
             [$this->timeline_controller, 'get_timeline_images']);
-        // Get timeline statistics
         add_action('wp_ajax_pv_get_timeline_stats', 
             [$this->timeline_controller, 'get_timeline_stats']);
-
-        // Get images by date range
         add_action('wp_ajax_pv_get_images_by_date_range', 
             [$this->timeline_controller, 'get_images_by_date_range']);
     }
@@ -156,7 +164,7 @@ class Plugin {
     /**
      * Get controller instance by name
      *
-     * @param string $controller Controller name (image, album, tag, share, timeline)
+     * @param string $controller Controller name (image, video, album, tag, share, timeline)
      * @return object|null Controller instance or null if not found
      */
     public function get_controller($controller) {
@@ -171,6 +179,15 @@ class Plugin {
      */
     public function get_image_controller() {
         return $this->image_controller;
+    }
+    
+    /**
+     * Get video controller
+     *
+     * @return VideoController
+     */
+    public function get_video_controller() {
+        return $this->video_controller;
     }
     
     /**
@@ -207,5 +224,14 @@ class Plugin {
      */
     public function get_timeline_controller() {
         return $this->timeline_controller;
+    }
+    
+    /**
+     * Get settings controller
+     *
+     * @return SettingsController
+     */
+    public function get_settings_controller() {
+        return $this->settings_controller;
     }
 }
