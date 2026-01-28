@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: PhotoVault
- * Plugin URI: https://github.com/mahbubmr500/photovault
+ * Plugin URI: https://github.com/mahbub500/photoVault
  * Description: A powerful private photo gallery and album management system for WordPress.
  * Version: 1.0.1
  * Author: mahbubmr500
- * Author URI: https://github.com/mahbubmr500
+ * Author URI: https://github.com/mahbub500/photoVault
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: photovault

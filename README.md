@@ -1,6 +1,5 @@
 === PhotoVault ===
 Contributors: mahbubmr500
-Donate link: https://buymeacoffee.com/mahbubmr500
 Tags: gallery, photos, albums, image management, private gallery
 Requires at least: 5.0
 Tested up to: 6.9
