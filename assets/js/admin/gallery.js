@@ -136,7 +136,22 @@
 
             // Tag filter click
             $(document).on('click', '.pv-tag-filter', function() {
-                self.filters.tag = $(this).data('tag-id');
+                const $clickedTag = $(this);
+                const tagId = $clickedTag.data('tag-id');
+                
+                // Toggle active state
+                if ($clickedTag.hasClass('active')) {
+                    // Remove filter if already active
+                    $clickedTag.removeClass('active');
+                    self.filters.tag = '';
+                } else {
+                    // Set active tag
+                    $('.pv-tag-filter').removeClass('active');
+                    $clickedTag.addClass('active');
+                    self.filters.tag = tagId;
+                }
+                
+                console.log('PhotoVault: Filter by tag:', self.filters.tag);
                 self.resetAndLoad();
             });
 
@@ -286,11 +301,12 @@
                 tag: '',
                 sort: 'date_desc'
             };
-            
+
             $('#pv-search').val('');
             $('#pv-filter-album').val('');
             $('#pv-sort-by').val('date_desc');
-            
+            $('.pv-tag-filter').removeClass('active');
+
             this.resetAndLoad();
         },
 
@@ -326,22 +342,49 @@
                 url: photoVault.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'pv_get_tags',
+                    action: 'get_tags',
                     nonce: photoVault.nonce
                 },
                 success: function(response) {
+                    console.log('PhotoVault: Tags loaded:', response);
+                    
                     if (response.success && response.data) {
                         const $tagsList = $('#pv-tags-list');
                         $tagsList.empty();
-                        
+
                         response.data.forEach(function(tag) {
+                            const tagName = tag.name || 'Untitled';
+                            const tagCount = tag.usage_count || tag.count || 0;
+                            
                             $tagsList.append(`
                                 <button class="pv-tag-filter" data-tag-id="${tag.id}">
-                                    ${tag.name} (${tag.count || 0})
+                                    ${tagName} (${tagCount})
                                 </button>
                             `);
                         });
+                    } else if (response.data && Array.isArray(response.data)) {
+                        // Handle case where response.data is directly an array
+                        const $tagsList = $('#pv-tags-list');
+                        $tagsList.empty();
+
+                        response.data.forEach(function(tag) {
+                            const tagName = tag.name || 'Untitled';
+                            const tagCount = tag.usage_count || tag.count || 0;
+                            
+                            $tagsList.append(`
+                                <button class="pv-tag-filter" data-tag-id="${tag.id}">
+                                    ${tagName} (${tagCount})
+                                </button>
+                            `);
+                        });
+                    } else {
+                        console.log('PhotoVault: No tags found or response format issue');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error('PhotoVault: Error loading tags:', error);
+                    console.error('PhotoVault: Status:', status);
+                    console.error('PhotoVault: Response:', xhr.responseText);
                 }
             });
         },
@@ -355,10 +398,23 @@
                     nonce: photoVault.nonce
                 },
                 success: function(response) {
+                    console.log('PhotoVault: Stats loaded:', response);
+                    
                     if (response.success && response.data) {
                         $('#pv-total-images').text(response.data.total_images || 0);
                         $('#pv-total-albums').text(response.data.total_albums || 0);
+                    } else {
+                        console.error('PhotoVault: Failed to load stats');
+                        $('#pv-total-images').text('0');
+                        $('#pv-total-albums').text('0');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error('PhotoVault: Error loading stats:', error);
+                    console.error('PhotoVault: Status:', status);
+                    console.error('PhotoVault: Response:', xhr.responseText);
+                    $('#pv-total-images').text('0');
+                    $('#pv-total-albums').text('0');
                 }
             });
         },
@@ -378,9 +434,16 @@
                 return $(this).val();
             }).get();
 
-            if (imageIds.length === 0) return;
+            if (imageIds.length === 0) {
+                alert('Please select at least one image to delete');
+                return;
+            }
 
-            if (!confirm(`Delete ${imageIds.length} image(s)?`)) return;
+            if (!confirm('Delete ' + imageIds.length + ' image(s)? This action cannot be undone.')) {
+                return;
+            }
+
+            console.log('PhotoVault: Deleting images:', imageIds);
 
             $.ajax({
                 url: photoVault.ajaxUrl,
@@ -391,12 +454,21 @@
                     image_ids: imageIds
                 },
                 success: function(response) {
+                    console.log('PhotoVault: Delete response:', response);
+                    
                     if (response.success) {
+                        alert(response.data.message);
                         window.PhotoVaultAdmin.resetAndLoad();
                         window.PhotoVaultAdmin.updateStats();
                     } else {
                         alert(response.data?.message || 'Failed to delete images');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error('PhotoVault: Delete error:', error);
+                    console.error('PhotoVault: Status:', status);
+                    console.error('PhotoVault: Response:', xhr.responseText);
+                    alert('Error deleting images: ' + error);
                 }
             });
         },
@@ -478,9 +550,18 @@
         },
 
         deleteImage: function() {
-            if (!confirm('Delete this image?')) return;
+            if (!confirm('Delete this image? This action cannot be undone.')) {
+                return;
+            }
 
             const imageId = $('#pv-detail-modal').data('image-id');
+            
+            if (!imageId) {
+                alert('No image selected');
+                return;
+            }
+
+            console.log('PhotoVault: Deleting single image:', imageId);
 
             $.ajax({
                 url: photoVault.ajaxUrl,
@@ -491,6 +572,8 @@
                     image_id: imageId
                 },
                 success: function(response) {
+                    console.log('PhotoVault: Delete response:', response);
+                    
                     if (response.success) {
                         $('#pv-detail-modal').fadeOut();
                         window.PhotoVaultAdmin.resetAndLoad();
@@ -498,6 +581,12 @@
                     } else {
                         alert(response.data?.message || 'Failed to delete image');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error('PhotoVault: Delete error:', error);
+                    console.error('PhotoVault: Status:', status);
+                    console.error('PhotoVault: Response:', xhr.responseText);
+                    alert('Error deleting image: ' + error);
                 }
             });
         },

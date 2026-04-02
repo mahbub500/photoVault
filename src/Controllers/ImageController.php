@@ -362,67 +362,84 @@ class ImageController {
      */
     public function delete() {
         check_ajax_referer('photovault_nonce', 'nonce');
-        
+
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
         // phpcs:enable WordPress.Security.NonceVerification.Missing
-        $user_id = get_current_user_id();
         
+        $user_id = get_current_user_id();
+
         if (!$image_id) {
             wp_send_json_error(['message' => __('Invalid image ID', 'photovault')]);
+            return;
         }
-        
+
         // Verify ownership
         if (!$this->image_model->user_owns_image($image_id, $user_id)) {
             wp_send_json_error(['message' => __('Insufficient permissions', 'photovault')]);
+            return;
         }
-        
+
         $deleted = $this->image_model->delete($image_id);
-        
+
         if ($deleted) {
             wp_send_json_success(['message' => __('Image deleted successfully', 'photovault')]);
         } else {
             wp_send_json_error(['message' => __('Failed to delete image', 'photovault')]);
         }
     }
-    
+
     /**
      * Bulk delete images
      */
     public function bulk_delete() {
         check_ajax_referer('photovault_nonce', 'nonce');
-        
+
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified above via check_ajax_referer()
         $image_ids = [];
         if (isset($_POST['image_ids']) && is_array($_POST['image_ids'])) {
             $image_ids = array_map('intval', wp_unslash($_POST['image_ids']));
         }
         // phpcs:enable WordPress.Security.NonceVerification.Missing
-        
+
         $user_id = get_current_user_id();
-        
+
         if (empty($image_ids)) {
             wp_send_json_error(['message' => __('No images selected', 'photovault')]);
+            return;
         }
-        
+
         $deleted_count = 0;
-        
+        $failed_count = 0;
+
         foreach ($image_ids as $image_id) {
             if ($this->image_model->user_owns_image($image_id, $user_id)) {
                 if ($this->image_model->delete($image_id)) {
                     $deleted_count++;
+                } else {
+                    $failed_count++;
                 }
+            } else {
+                $failed_count++;
             }
         }
-        
-        wp_send_json_success([
-            'message'       => sprintf(
-                // translators: %1$d is the number of images deleted.
-                __('%1$d images deleted successfully', 'photovault'),
-                $deleted_count
-            ),
-            'deleted_count' => $deleted_count,
-        ]);
+
+        if ($deleted_count > 0) {
+            wp_send_json_success([
+                'message'       => sprintf(
+                    /* translators: %1$d is the number of images deleted. */
+                    __('%1$d image(s) deleted successfully', 'photovault'),
+                    $deleted_count
+                ),
+                'deleted_count' => $deleted_count,
+                'failed_count'  => $failed_count,
+            ]);
+        } else {
+            wp_send_json_error([
+                'message' => __('Failed to delete images. Check permissions.', 'photovault'),
+                'failed_count' => $failed_count,
+            ]);
+        }
     }
     
     /**
@@ -459,6 +476,39 @@ class ImageController {
                 $added_count
             ),
             'added_count'  => $added_count,
+        ]);
+    }
+
+    /**
+     * Get statistics (total images, total albums)
+     */
+    public function get_stats() {
+        check_ajax_referer('photovault_nonce', 'nonce');
+
+        global $wpdb;
+        $user_id = get_current_user_id();
+
+        // Get total images for current user
+        $total_images = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}pv_images WHERE user_id = %d",
+            $user_id
+        ));
+
+        // Get total albums for current user
+        $total_albums = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}pv_albums WHERE user_id = %d",
+            $user_id
+        ));
+
+        // Admin can see all counts
+        if (current_user_can('manage_options')) {
+            $total_images = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}pv_images");
+            $total_albums = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}pv_albums");
+        }
+
+        wp_send_json_success([
+            'total_images' => (int) $total_images,
+            'total_albums' => (int) $total_albums,
         ]);
     }
 }

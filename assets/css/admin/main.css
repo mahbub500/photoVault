@@ -662,6 +662,31 @@
     margin-top: 5px;
 }
 
+.pv-tag-filter {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #f0f0f1;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #3c434a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pv-tag-filter:hover {
+    background: #2271b1;
+    color: #fff;
+    border-color: #2271b1;
+}
+
+.pv-tag-filter.active {
+    background: #2271b1;
+    color: #fff;
+    border-color: #2271b1;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
     .pv-grid-view {

@@ -126,7 +126,9 @@ class Plugin {
         add_action('wp_ajax_pv_get_images', [$this->image_controller, 'get_images']);
         add_action('wp_ajax_pv_delete_image', [$this->image_controller, 'delete']);
         add_action('wp_ajax_pv_update_image', [$this->image_controller, 'update']);
-        
+        add_action('wp_ajax_pv_bulk_delete', [$this->image_controller, 'bulk_delete']);
+        add_action('wp_ajax_pv_get_stats', [$this->image_controller, 'get_stats']);
+
         // Album operations
         add_action('wp_ajax_pv_create_album', [$this->album_controller, 'create']);
         add_action('wp_ajax_pv_get_albums', [$this->album_controller, 'get_albums']);
