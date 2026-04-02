@@ -206,8 +206,9 @@ class Activator {
             'photovault_enable_likes' => false,
             'photovault_image_quality' => 85,
             'photovault_auto_optimize' => true,
+            'photovault_use_image_creation_date' => false,
         ];
-        
+
         foreach ($defaults as $key => $value) {
             if (get_option($key) === false) {
                 add_option($key, $value);

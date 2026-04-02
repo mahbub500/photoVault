@@ -139,7 +139,13 @@ class SettingsManager {
             'default' => ['jpg', 'jpeg', 'png', 'gif', 'webp'],
             'sanitize_callback' => [$this, 'sanitize_allowed_types']
         ]);
-        
+
+        register_setting('photovault_upload', 'photovault_use_image_creation_date', [
+            'type' => 'boolean',
+            'default' => false,
+            'sanitize_callback' => 'rest_sanitize_boolean'
+        ]);
+
         // Image Processing Settings
         register_setting('photovault_processing', 'photovault_image_quality', [
             'type' => 'integer',

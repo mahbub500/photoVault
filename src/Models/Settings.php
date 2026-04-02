@@ -34,6 +34,7 @@ class Settings {
         'photovault_enable_likes' => false,
         'photovault_image_quality' => 85,
         'photovault_auto_optimize' => true,
+        'photovault_use_image_creation_date' => false,
     ];
     
     /**

@@ -60,25 +60,47 @@ settings_fields('photovault_upload');
                         <legend class="screen-reader-text">
                             <span><?php esc_html_e('Allowed File Types', 'photovault'); ?></span>
                         </legend>
-                        
+
                         <?php foreach ($data['file_types'] as $ext => $label) : ?>
                             <label>
-                                <input type="checkbox" 
-                                       name="photovault_allowed_types[]" 
-                                       value="<?php echo esc_attr($ext); ?>" 
+                                <input type="checkbox"
+                                       name="photovault_allowed_types[]"
+                                       value="<?php echo esc_attr($ext); ?>"
                                        <?php checked(in_array($ext, $data['upload']['allowed_types']), true); ?>>
                                 <?php echo esc_html($label); ?>
                             </label>
                         <?php endforeach; ?>
-                        
+
                         <p class="description">
                             <?php esc_html_e('Select which image formats users can upload', 'photovault'); ?>
                         </p>
                     </fieldset>
                 </td>
             </tr>
+
+            <!-- Use Image Creation Date -->
+            <tr>
+                <th scope="row">
+                    <label for="photovault_use_image_creation_date">
+                        <?php esc_html_e('Use Image Creation Date', 'photovault'); ?>
+                    </label>
+                </th>
+                <td>
+                    <label>
+                        <input type="checkbox"
+                               id="photovault_use_image_creation_date"
+                               name="photovault_use_image_creation_date"
+                               value="1"
+                               <?php checked($data['upload']['use_image_creation_date'], 1); ?>>
+                        <?php esc_html_e('Use image creation date (EXIF) as upload date', 'photovault'); ?>
+                    </label>
+                    <p class="description">
+                        <?php esc_html_e('When enabled, uploaded images will use their creation date from EXIF data instead of the actual upload date. If EXIF date is not available, the upload date will be used.', 'photovault'); ?>
+                    </p>
+                </td>
+            </tr>
         </tbody>
     </table>
-    
+
     <?php submit_button(); ?>
 </div>

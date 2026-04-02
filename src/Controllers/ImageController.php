@@ -57,7 +57,51 @@ class ImageController {
             
             // Process image (create thumbnails, extract EXIF, etc.)
             $processed = $this->processor->process($upload_result['attachment_id']);
+
+            // Determine upload date based on setting
+            $upload_date = current_time('mysql');
             
+            // Check if we should use image creation date from EXIF
+            $use_exif_date = get_option('photovault_use_image_creation_date', false);
+            
+            // Log for debugging (remove in production)
+            error_log('PhotoVault: use_image_creation_date setting = ' . ($use_exif_date ? 'true' : 'false'));
+            
+            if ($use_exif_date && !empty($processed['exif']['date_taken'])) {
+                $exif_date = $processed['exif']['date_taken'];
+                error_log('PhotoVault: EXIF date_taken = ' . $exif_date);
+                
+                // EXIF date format is "YYYY:MM:DD HH:MM:SS"
+                // Parse it properly
+                $exif_parts = explode(' ', $exif_date);
+                if (count($exif_parts) === 2) {
+                    // Replace colons in date part only: "2023:01:15" -> "2023-01-15"
+                    $date_part = str_replace(':', '-', $exif_parts[0]);
+                    $time_part = $exif_parts[1];
+                    $exif_date_formatted = $date_part . ' ' . $time_part;
+                    
+                    error_log('PhotoVault: Formatted date = ' . $exif_date_formatted);
+                    
+                    // Try to parse and format the date properly
+                    $timestamp = @strtotime($exif_date_formatted);
+                    if ($timestamp !== false) {
+                        $upload_date = date('Y-m-d H:i:s', $timestamp);
+                        error_log('PhotoVault: Using EXIF upload date = ' . $upload_date);
+                    } else {
+                        error_log('PhotoVault: Failed to parse EXIF date, using current time');
+                    }
+                } else {
+                    error_log('PhotoVault: Invalid EXIF date format');
+                }
+            } else {
+                if (!$use_exif_date) {
+                    error_log('PhotoVault: Setting disabled, using current time');
+                }
+                if (empty($processed['exif']['date_taken'])) {
+                    error_log('PhotoVault: No EXIF date_taken found');
+                }
+            }
+
             // Save to database
             $image_data = [
                 'attachment_id' => $upload_result['attachment_id'],
@@ -65,6 +109,7 @@ class ImageController {
                 'title' => isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '',
                 'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
                 'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : 'private',
+                'upload_date' => $upload_date,
                 'file_size' => $processed['file_size'],
                 'width' => $processed['width'],
                 'height' => $processed['height'],
@@ -144,13 +189,40 @@ class ImageController {
         if ($chunk_index == $total_chunks - 1 && isset($result['attachment_id'])) {
             // Process like a normal upload
             $processed = $this->processor->process($result['attachment_id']);
+
+            // Determine upload date based on setting
+            $upload_date = current_time('mysql');
             
+            // Check if we should use image creation date from EXIF
+            $use_exif_date = get_option('photovault_use_image_creation_date', false);
+            
+            if ($use_exif_date && !empty($processed['exif']['date_taken'])) {
+                $exif_date = $processed['exif']['date_taken'];
+                
+                // EXIF date format is "YYYY:MM:DD HH:MM:SS"
+                // Parse it properly
+                $exif_parts = explode(' ', $exif_date);
+                if (count($exif_parts) === 2) {
+                    // Replace colons in date part only: "2023:01:15" -> "2023-01-15"
+                    $date_part = str_replace(':', '-', $exif_parts[0]);
+                    $time_part = $exif_parts[1];
+                    $exif_date_formatted = $date_part . ' ' . $time_part;
+                    
+                    // Try to parse and format the date properly
+                    $timestamp = @strtotime($exif_date_formatted);
+                    if ($timestamp !== false) {
+                        $upload_date = date('Y-m-d H:i:s', $timestamp);
+                    }
+                }
+            }
+
             $image_data = [
                 'attachment_id' => $result['attachment_id'],
                 'user_id' => get_current_user_id(),
                 'title' => isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '',
                 'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
                 'visibility' => isset($_POST['visibility']) ? sanitize_text_field(wp_unslash($_POST['visibility'])) : 'private',
+                'upload_date' => $upload_date,
                 'file_size' => $processed['file_size'],
                 'width' => $processed['width'],
                 'height' => $processed['height'],

@@ -158,6 +158,7 @@ class SettingsController {
             'max_upload_size' => $this->get_setting('photovault_max_upload_size', 10485760),
             'allowed_types' => $this->get_setting('photovault_allowed_types', ['jpg', 'jpeg', 'png', 'gif', 'webp']),
             'server_max' => wp_max_upload_size(),
+            'use_image_creation_date' => $this->get_setting('photovault_use_image_creation_date', false),
         ];
     }
     
@@ -169,22 +170,26 @@ class SettingsController {
      */
     public function update_upload_settings($data) {
         $settings = [];
-        
+
         if (isset($data['photovault_max_upload_size'])) {
             $max_size = absint($data['photovault_max_upload_size']);
             $server_max = wp_max_upload_size();
-            
+
             // Don't allow setting higher than server maximum
             if ($max_size <= $server_max) {
                 $settings['photovault_max_upload_size'] = $max_size;
             }
         }
-        
+
         if (isset($data['photovault_allowed_types'])) {
             $allowed_types = $this->sanitize_allowed_types($data['photovault_allowed_types']);
             $settings['photovault_allowed_types'] = $allowed_types;
         }
-        
+
+        if (isset($data['photovault_use_image_creation_date'])) {
+            $settings['photovault_use_image_creation_date'] = (bool) $data['photovault_use_image_creation_date'];
+        }
+
         return $this->update_settings($settings);
     }
     

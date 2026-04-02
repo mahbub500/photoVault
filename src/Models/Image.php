@@ -24,7 +24,7 @@ class Image {
      */
     public function create($data) {
         global $wpdb;
-        
+
         $defaults = [
             'user_id' => get_current_user_id(),
             'title' => '',
@@ -32,11 +32,12 @@ class Image {
             'visibility' => 'private',
             'upload_date' => current_time('mysql'),
         ];
-        
+
+        // Merge data with defaults, but allow data to override defaults
         $data = wp_parse_args($data, $defaults);
-        
+
         $result = $wpdb->insert($this->table, $data);
-        
+
         return $result ? $wpdb->insert_id : false;
     }
     

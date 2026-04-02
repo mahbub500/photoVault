@@ -65,13 +65,23 @@ class ImageProcessor {
         if (!function_exists('exif_read_data')) {
             return [];
         }
-        
+
         $exif = @exif_read_data($file_path);
-        
+
         if (!$exif) {
             return [];
         }
-        
+
+        // Get date taken - try multiple fields in order of preference
+        $date_taken = '';
+        if (!empty($exif['DateTimeOriginal'])) {
+            $date_taken = $exif['DateTimeOriginal'];
+        } elseif (!empty($exif['DateTimeDigitized'])) {
+            $date_taken = $exif['DateTimeDigitized'];
+        } elseif (!empty($exif['DateTime'])) {
+            $date_taken = $exif['DateTime'];
+        }
+
         return [
             'camera' => $exif['Model'] ?? '',
             'lens' => $exif['LensModel'] ?? '',
@@ -79,7 +89,7 @@ class ImageProcessor {
             'aperture' => $exif['FNumber'] ?? '',
             'shutter_speed' => $exif['ExposureTime'] ?? '',
             'iso' => $exif['ISOSpeedRatings'] ?? '',
-            'date_taken' => $exif['DateTimeOriginal'] ?? '',
+            'date_taken' => $date_taken,
             'gps_latitude' => $this->get_gps_coordinate($exif, 'Latitude'),
             'gps_longitude' => $this->get_gps_coordinate($exif, 'Longitude'),
         ];
