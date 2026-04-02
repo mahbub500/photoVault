@@ -90,10 +90,13 @@
 
             // Image card click
             $(document).on('click', '.pv-image-card', function(e) {
-                if (!$(e.target).is('input[type="checkbox"]')) {
-                    const imageId = $(this).data('id');
-                    self.openImageDetail(imageId);
+                // Don't open modal if clicking on checkbox
+                if ($(e.target).closest('input[type="checkbox"]').length) {
+                    return;
                 }
+                
+                const imageId = $(this).data('id');
+                self.openImageDetail(imageId);
             });
 
             // Create album from gallery
@@ -431,40 +434,32 @@
         openImageDetail: function(imageId) {
             const self = this;
             this.currentImageIndex = this.images.findIndex(img => img.id == imageId);
+            const image = this.images[this.currentImageIndex];
 
-            $.ajax({
-                url: photoVault.ajaxUrl,
-                type: 'POST',
-                data: {
-                    action: 'pv_get_image',
-                    nonce: photoVault.nonce,
-                    image_id: imageId
-                },
-                success: function(response) {
-                    if (response.success) {
-                        self.renderImageDetail(response.data);
-                        $('#pv-detail-modal').fadeIn();
-                    }
-                }
-            });
-        },
+            if (!image) return;
 
-        renderImageDetail: function(image) {
+            // Show image directly from cached data (no AJAX needed for image display)
             $('#pv-detail-img').attr('src', image.url);
             $('#pv-detail-title').text(image.title || 'Untitled');
             $('#pv-detail-date').text(new Date(image.upload_date).toLocaleDateString());
             $('#pv-detail-visibility').text(image.visibility || 'private');
-            
-            // Render tags
+
+            // Render tags if available
             const $tagsList = $('#pv-detail-tags-list');
             $tagsList.empty();
-            if (image.tags && image.tags.length > 0) {
-                image.tags.forEach(tag => {
-                    $tagsList.append(`<span class="pv-tag">${tag.name}</span>`);
+            if (image.tags && Array.isArray(image.tags) && image.tags.length > 0) {
+                image.tags.forEach(function(tag) {
+                    const tagName = tag.name || '';
+                    if (tagName) {
+                        $tagsList.append('<span class="pv-tag">' + self.escapeHtml(tagName) + '</span>');
+                    }
                 });
+            } else {
+                $tagsList.append('<span style="color: #999; font-size: 12px;">No tags</span>');
             }
-            
+
             $('#pv-detail-modal').data('image-id', image.id);
+            $('#pv-detail-modal').css('display', 'flex').hide().fadeIn(200);
         },
 
         navigateImage: function(direction) {
@@ -573,7 +568,7 @@
             $('#pv-album-name').val('');
             $('#pv-album-description').val('');
             $('#pv-album-visibility').val('private');
-            $('#pv-album-modal').data('album-id', '').fadeIn();
+            $('#pv-album-modal').data('album-id', '').css('display', 'flex').hide().fadeIn(300);
         },
 
         showError: function(message) {

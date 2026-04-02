@@ -85,20 +85,17 @@ class AssetManager {
             );
         }
 
-        if (str_contains($hook, 'photovault') ) {
-
-            // Frontend CSS
-            wp_enqueue_style(
-                'photovault-admin',
-                PHOTOVAULT_PLUGIN_URL . 'assets/css/admin/gallery.css',
-                [],
-                PHOTOVAULT_VERSION
-            );
-            // Frontend JavaScript
+        if (strpos($hook, 'photovault') !== false && $hook !== 'toplevel_page_photovault' ) {
+            // Load gallery.js on main page
+        }
+        
+        // Main gallery page (toplevel_page_photovault)
+        if ($hook === 'toplevel_page_photovault' || $hook === 'photoVault_page_photovault') {
+            // Gallery JavaScript
             wp_enqueue_script(
-                'photovault-admin',
+                'photovault-admin-gallery',
                 PHOTOVAULT_PLUGIN_URL . 'assets/js/admin/gallery.js',
-                ['jquery'],
+                ['jquery', 'photovault-admin-main'],
                 PHOTOVAULT_VERSION,
                 true
             );

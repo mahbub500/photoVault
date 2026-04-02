@@ -83,13 +83,13 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         isEditMode = false;
         currentAlbumId = null;
-        
+
         $('#pv-album-modal-title').text(photoVault.i18n.createNewAlbum);
         $('#pv-album-name').val('');
         $('#pv-album-description').val('');
         $('#pv-album-visibility').val('private');
-        
-        $('#pv-album-modal').fadeIn(300);
+
+        $('#pv-album-modal').css('display', 'flex').hide().fadeIn(300);
     });
 
     /**

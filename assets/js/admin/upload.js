@@ -22,7 +22,7 @@
 
             // Open upload modal
             $('#pv-upload-btn').on('click', function() {
-                $('#pv-upload-modal').fadeIn();
+                $('#pv-upload-modal').css('display', 'flex').hide().fadeIn(200);
                 self.loadAlbums();
             });
 
